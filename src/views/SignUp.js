@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as Mui from '../Components'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import loginBackground from '../assets/loginBackground.jpg'
-import { submitLogin } from '../Api'
+import { submitSignup } from '../Api'
 import { useNavigate, useHref } from "react-router-dom"
 
 function Copyright(props) {
@@ -19,7 +19,7 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-export default function SignInSide() {
+export default function SignUpSide() {
   const navigate = useNavigate();
 
   const [alertOpen, setAlertOpen] = React.useState(false)
@@ -28,13 +28,13 @@ export default function SignInSide() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log(data.get('username'), data.get('password'));
-    submitLogin(data.get('username'), data.get('password')).then((data) => {
+    console.log(data.get('username'), data.get('password'), data.get('slogan'));
+    submitSignup(data.get('username'), data.get('password'), data.get('slogan')).then((data) => {
       if (data.data.ok) {
-        setAlertDetail({ "type": "success", "message": "Authorization completed! Redirecting to the homepage.", "title": "Success" })
+        setAlertDetail({ "type": "success", "message": "Registration completed. Redirecting you to SignIn page.", "title": "Success" })
         setAlertOpen(true)
         setTimeout(() => {
-          navigate("/")
+          navigate("/signin")
         }, 1000)
       } else {
         setAlertDetail({ "type": "error", "message": "Serverside response: " + data.data.data, "title": "Error" })
@@ -88,7 +88,7 @@ export default function SignInSide() {
               <Mui.LockOutlinedIcon />
             </Mui.Avatar>
             <Mui.Typography component="h1" variant="h5">
-              Sign in
+              Sign up
             </Mui.Typography>
             <Mui.Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <Mui.TextField
@@ -111,6 +111,15 @@ export default function SignInSide() {
                 id="password"
                 autoComplete="current-password"
               />
+              <Mui.TextField
+                margin="normal"
+                required
+                fullWidth
+                name="slogan"
+                label="Slogan"
+                id="slogan"
+                autoComplete=""
+              />
               {/* no need to handle onClick here because this is a form */}
               <Mui.Button
                 type="submit"
@@ -118,7 +127,7 @@ export default function SignInSide() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                Sign Up
               </Mui.Button>
               <Mui.Grid container>
                 <Mui.Grid item xs>
@@ -127,8 +136,8 @@ export default function SignInSide() {
                   </Mui.Link>
                 </Mui.Grid>
                 <Mui.Grid item>
-                  <Mui.Link href={useHref("/signup")} variant="body2">
-                    {"Sign Up"}
+                  <Mui.Link href={useHref('/signin')} variant="body2">
+                    {"Sign In"}
                   </Mui.Link>
                 </Mui.Grid>
               </Mui.Grid>
