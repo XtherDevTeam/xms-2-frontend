@@ -17,8 +17,6 @@ function Copyright(props) {
   );
 }
 
-const defaultTheme = createTheme();
-
 export default function SignUpSide() {
   const navigate = useNavigate();
 
@@ -47,7 +45,7 @@ export default function SignUpSide() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={Mui.theme}>
       <Mui.Grid container component="main" sx={{ height: '100vh' }}>
         <Mui.CssBaseline />
         <Mui.Grid

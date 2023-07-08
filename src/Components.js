@@ -28,13 +28,34 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Breadcrumbs from '@mui/material/Breadcrumbs'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Backdrop from '@mui/material/Backdrop'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
 import imgOops from './assets/oops.jpg'
 import imgBackground2 from './assets/background-2.png'
-import imgBackground3 from './assets/background-3.jpg'
+import imgBackground3 from './assets/background-3.png'
 import { styled } from "@mui/system"
+
+import Profile from './components/Profile'
+import Drive from './components/Drive'
+
+import { createTheme } from '@mui/material/styles'
 
 const Background = styled("div")({
   position: "absolute",
@@ -45,12 +66,33 @@ const Background = styled("div")({
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   zIndex: -2000,
-});
+})
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      light: '#ea4c03',
+      main: '#f36903',
+      dark: '#f97902',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#1a3db3',
+      main: '#165dd2',
+      dark: '#116fe5',
+      contrastText: '#000',
+    },
+  },
+})
+
 
 export {
   Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox,
   Link, Paper, Box, Grid, LockOutlinedIcon, Typography, Snackbar, Alert,
   AlertTitle, IconButton, Icons, Background, Card, CardActions, CardContent,
   CardMedia, Container, imgOops, imgBackground2, AppBar, Toolbar, Drawer,
-  ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, List
+  ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, List,
+  Profile, Tab, Tabs, Drive, Breadcrumbs, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Backdrop, ButtonGroup, theme, Dialog,
+  DialogActions, DialogContent, DialogContentText, DialogTitle
 }

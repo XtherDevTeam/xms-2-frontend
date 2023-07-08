@@ -8,6 +8,30 @@ function checkIfLoggedIn() {
   return axios.get("/api/xms/v1/user/status")
 }
 
+function signOut(path) {
+  return axios.post("/api/xms/v1/signout",)
+}
+
+function driveDir(path) {
+  return axios.post("/api/xms/v1/drive/dir", { "path": path },)
+}
+
+function driveDelete(path) {
+  return axios.post("/api/xms/v1/drive/delete", { "path": path },)
+}
+
+function driveRename(path, newName) {
+  return axios.post("/api/xms/v1/drive/rename", { "path": path, "newName": newName },)
+}
+
+function driveMove(path, newPath) {
+  return axios.post("/api/xms/v1/drive/move", { "path": path, "newPath": newPath },)
+}
+
+function getDownloadPath(path) {
+  return `/api/xms/v1/drive/file?path=` + encodeURIComponent(path)
+}
+
 function submitLogin(username, password) {
   return new Promise((resolve, reject) => {
     if (username.length > 64 || password.length > 128) {
@@ -44,4 +68,7 @@ function userInfo(uid) {
   return axios.get(`/api/xms/v1/user/${uid}/info`);
 }
 
-export { submitLogin, submitSignup, checkIfLoggedIn, userInfo }
+export {
+  submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
+  signOut, getDownloadPath, driveRename, driveMove
+}

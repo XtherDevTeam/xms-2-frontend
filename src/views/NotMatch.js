@@ -6,13 +6,11 @@ import loginBackground from '../assets/loginBackground.jpg'
 import { submitSignup } from '../Api'
 import { useNavigate, useHref } from "react-router-dom"
 
-const defaultTheme = createTheme();
-
 export default function NotMatch() {
   const navigate = useNavigate()
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={Mui.theme}>
       <Mui.Background />
       <Mui.Card sx={{ maxWidth: 500, top: "50%", left: "50%", transform: "translate(-50%, -50%)", position: "absolute" }}>
         <Mui.CardMedia
