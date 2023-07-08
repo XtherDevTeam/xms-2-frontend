@@ -5,7 +5,6 @@ import * as Api from '../Api'
 
 function dirname(pathStr) {
   if (pathStr === "/") { return "" }
-
   if (pathStr.endsWith('/')) { pathStr = pathStr.substring(0, pathStr.length - 1) }
   let paths = pathStr.split("/")
   console.log(paths)
@@ -22,15 +21,13 @@ export default function PathInputDialog(props) {
   let [inputValue, setInputValue] = React.useState('/')
   // use this to force refresh the rendered component
   let [rawCandidateList, setRawCandidateList] = React.useState('')
-  // store driveDir query result
-  let [driveDirQueryResult, setDriveDirQueryResult] = React.useState({ list: [], info: { files: 0, dirs: 0, total: 0 } })
 
   function CandidateList(props) {
     return (
       <Mui.List sx={{ maxHeight: "500px", overflowY: "scroll" }}>
         {props.current !== "/" && <Mui.ListItem key={0} disablePadding>
           <Mui.ListItemButton onClick={() => {
-            if (dirname(props.current) == "/") { setInputValue(dirname(props.current)) }
+            if (dirname(props.current) == "/") { setInputValue("/") }
             else { setInputValue(dirname(props.current) + "/") }
             refreshCandidateList(dirname(props.current))
           }}>
@@ -48,13 +45,12 @@ export default function PathInputDialog(props) {
   function refreshCandidateList(dirPath) {
     Api.driveDir(dirPath).then((data) => {
       if (data.data.ok) {
-        setDriveDirQueryResult(data.data.data)
-        console.log("fuck it", dirPath, data.data.data.list)
+        console.log("fuck it", props.dirOnly, dirPath, data.data.data.list)
         setRawCandidateList(<CandidateList current={dirPath} dirOnly={props.dirOnly} items={
           data.data.data.list.map((row, index) =>
           (
             <Mui.ListItem key={index + 1} disablePadding>
-              <Mui.ListItemButton disabled={props.dirOnly && row.type !== "dir"} onClick={() => {
+              <Mui.ListItemButton disabled={props.dirOnly && row.type === "file"} onClick={() => {
                 if (row.type === "dir") {
                   if (row.path === "/") {
                     setInputValue("/")

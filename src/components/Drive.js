@@ -22,7 +22,7 @@ function defaultItemRenameDialogState() {
 }
 
 function defaultPathInputDialogState() {
-  return { "title": "", "message": "", onCancel: () => { }, onOk: (data) => { }, "state": false }
+  return { "title": "", "message": "", onCancel: () => { }, onOk: (data) => { }, dirOnly: false, "state": false }
 }
 
 export default function Drive(props) {
@@ -136,7 +136,7 @@ export default function Drive(props) {
     } else if (event === "move") {
       setPathInputDialogState({
         title: "Move to",
-        message: `New path for ${driveInfo.info.list[index].filename}`,
+        message: `Enter the new path for ${driveInfo.info.list[index].filename}`,
         state: true,
         onOk: (newPath) => {
           setPathInputDialogState(defaultPathInputDialogState())
@@ -154,7 +154,8 @@ export default function Drive(props) {
         },
         onCancel: () => {
           setPathInputDialogState(defaultPathInputDialogState())
-        }
+        },
+        dirOnly: true
       })
     } else if (event === "rename") {
       console.log("origin", driveInfo.info.list[index].name)
@@ -250,7 +251,7 @@ export default function Drive(props) {
   return (
     <Mui.Card sx={{ width: props.width }}>
       <Mui.CardContent>
-        <PathInputDialog title={pathInputDialogState.title} message={pathInputDialogState.message} state={pathInputDialogState.state} onOk={pathInputDialogState.onOk} onCancel={pathInputDialogState.onCancel} />
+        <PathInputDialog title={pathInputDialogState.title} message={pathInputDialogState.message} state={pathInputDialogState.state} onOk={pathInputDialogState.onOk} onCancel={pathInputDialogState.onCancel} dirOnly={pathInputDialogState.dirOnly} />
         <ItemRenameDialog origin={itemRenameDialogState.origin} path={itemRenameDialogState.path} state={itemRenameDialogState.state} onOk={itemRenameDialogState.onOk} onCancel={itemRenameDialogState.onCancel}></ItemRenameDialog>
         <ConfirmDialog title={confirmDialogState.title} message={confirmDialogState.message} state={confirmDialogState.state} onOk={confirmDialogState.onOk} onCancel={confirmDialogState.onCancel}></ConfirmDialog>
         <Mui.Snackbar open={alertOpen} autoHideDuration={6000} >
