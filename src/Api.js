@@ -4,6 +4,20 @@ function makeResult(ok, data) {
   return { "ok": ok, "data": data }
 }
 
+function dirname(pathStr) {
+  if (pathStr === "/") { return "" }
+  if (pathStr.endsWith('/')) { pathStr = pathStr.substring(0, pathStr.length - 1) }
+  let paths = pathStr.split("/")
+  console.log(paths)
+  if (paths.length == 2) {
+    return '/'
+  } else {
+    let final = '/'
+    paths.map((i, idx) => { if (idx !== 0 && idx !== paths.length - 1) { final += i + '/' } })
+    return final.substring(0, final.length - 1)
+  }
+}
+
 function checkIfLoggedIn() {
   return axios.get("/api/xms/v1/user/status")
 }
@@ -26,6 +40,14 @@ function driveRename(path, newName) {
 
 function driveMove(path, newPath) {
   return axios.post("/api/xms/v1/drive/move", { "path": path, "newPath": newPath },)
+}
+
+function driveCreateDir(path, name) {
+  return axios.post("/api/xms/v1/drive/createdir", { "path": path, "name": name },)
+}
+
+function driveUpload(path, data) {
+  return axios.post(`/api/xms/v1/drive/upload?path=${encodeURIComponent(path)}`, data)
 }
 
 function getDownloadPath(path) {
@@ -70,5 +92,6 @@ function userInfo(uid) {
 
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
-  signOut, getDownloadPath, driveRename, driveMove
+  signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
+  dirname
 }

@@ -55,6 +55,8 @@ import { styled } from "@mui/system"
 import Profile from './components/Profile'
 import Drive from './components/Drive'
 
+import FileUpload from 'react-mui-fileuploader'
+
 import { createTheme } from '@mui/material/styles'
 
 const Background = styled("div")({
@@ -94,5 +96,6 @@ export {
   ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, List,
   Profile, Tab, Tabs, Drive, Breadcrumbs, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Backdrop, ButtonGroup, theme, Dialog,
-  DialogActions, DialogContent, DialogContentText, DialogTitle
+  DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
+  imgBackground3
 }

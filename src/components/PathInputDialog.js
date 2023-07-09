@@ -3,33 +3,21 @@ import * as Mui from '../Components'
 
 import * as Api from '../Api'
 
-function dirname(pathStr) {
-  if (pathStr === "/") { return "" }
-  if (pathStr.endsWith('/')) { pathStr = pathStr.substring(0, pathStr.length - 1) }
-  let paths = pathStr.split("/")
-  console.log(paths)
-  if (paths.length == 2) {
-    return '/'
-  } else {
-    let final = '/'
-    paths.map((i, idx) => { if (idx !== 0 && idx !== paths.length - 1) { final += i + '/' } })
-    return final.substring(0, final.length - 1)
-  }
-}
+
 
 export default function PathInputDialog(props) {
   let [inputValue, setInputValue] = React.useState('/')
   // use this to force refresh the rendered component
   let [rawCandidateList, setRawCandidateList] = React.useState('')
 
-  function CandidateList(props) {
+  let CandidateList = (props) => {
     return (
       <Mui.List sx={{ maxHeight: "500px", overflowY: "scroll" }}>
         {props.current !== "/" && <Mui.ListItem key={0} disablePadding>
           <Mui.ListItemButton onClick={() => {
-            if (dirname(props.current) == "/") { setInputValue("/") }
-            else { setInputValue(dirname(props.current) + "/") }
-            refreshCandidateList(dirname(props.current))
+            if (Api.dirname(props.current) == "/") { setInputValue("/") }
+            else { setInputValue(Api.dirname(props.current) + "/") }
+            refreshCandidateList(Api.dirname(props.current))
           }}>
             <Mui.ListItemIcon>
               <Mui.Icons.Folder />
@@ -37,59 +25,57 @@ export default function PathInputDialog(props) {
             <Mui.ListItemText primary={".."} />
           </Mui.ListItemButton>
         </Mui.ListItem>}
-        {props.items}
+        {props.items.map((row, index) =>
+        (
+          <Mui.ListItem key={index + 1} disablePadding>
+            <Mui.ListItemButton disabled={props.dirOnly && row.type === "file"} onClick={() => {
+              if (row.type === "dir") {
+                if (row.path === "/") {
+                  setInputValue("/")
+                } else {
+                  setInputValue(row.path + "/")
+                }
+                refreshCandidateList(row.path)
+              } else {
+                setInputValue(row.path)
+              }
+            }}>
+              <Mui.ListItemIcon>
+                {row.type === "file" && <Mui.Icons.InsertDriveFile />}
+                {row.type === "dir" && <Mui.Icons.Folder />}
+              </Mui.ListItemIcon>
+              <Mui.ListItemText primary={row.filename} />
+            </Mui.ListItemButton>
+          </Mui.ListItem>
+        ))}
       </Mui.List>
     )
   }
 
-  function refreshCandidateList(dirPath) {
+  let refreshCandidateList = (dirPath) => {
     Api.driveDir(dirPath).then((data) => {
       if (data.data.ok) {
-        console.log("fuck it", props.dirOnly, dirPath, data.data.data.list)
-        setRawCandidateList(<CandidateList current={dirPath} dirOnly={props.dirOnly} items={
-          data.data.data.list.map((row, index) =>
-          (
-            <Mui.ListItem key={index + 1} disablePadding>
-              <Mui.ListItemButton disabled={props.dirOnly && row.type === "file"} onClick={() => {
-                if (row.type === "dir") {
-                  if (row.path === "/") {
-                    setInputValue("/")
-                  } else {
-                    setInputValue(row.path + "/")
-                  }
-                  refreshCandidateList(row.path)
-                } else {
-                  setInputValue(row.path)
-                }
-              }}>
-                <Mui.ListItemIcon>
-                  {row.type === "file" && <Mui.Icons.InsertDriveFile />}
-                  {row.type === "dir" && <Mui.Icons.Folder />}
-                </Mui.ListItemIcon>
-                <Mui.ListItemText primary={row.filename} />
-              </Mui.ListItemButton>
-            </Mui.ListItem>
-          ))
-        } />)
+        setRawCandidateList(<CandidateList current={dirPath} dirOnly={props.dirOnly} items={data.data.data.list} />)
       } else {
-        setRawCandidateList(<Mui.Typography variant='body2' align='center' color='text.secondary'>
+        setRawCandidateList(<Mui.Typography component="div" variant='body2' align='center' color='text.secondary'>
           Error loading candidate list: {data.data.data}
         </Mui.Typography>)
       }
     }).catch((err) => {
-      setRawCandidateList(<Mui.Typography variant='body2' align='center' color='text.secondary'>
+      setRawCandidateList(<Mui.Typography component="div" variant='body2' align='center' color='text.secondary'>
         Error loading candidate list: NetworkError
       </Mui.Typography>)
     })
   }
 
+  // make the props update
   React.useEffect(() => {
     refreshCandidateList(inputValue)
-  }, [])
+  }, [props.state])
 
   return (
     <Mui.Dialog onClose={() => { props.onCancel() }} open={props.state}>
-      <Mui.Box component="form" noValidate autoComplete="off" onSubmit={(event) => { event.preventDefault(); let d = new FormData(event.currentTarget);props.onOk(d.get('data')) }}>
+      <Mui.Box component="form" noValidate autoComplete="off" onSubmit={(event) => { event.preventDefault(); let d = new FormData(event.currentTarget); props.onOk(d.get('data')) }}>
         <div>
           <Mui.DialogTitle>{props.title}</Mui.DialogTitle>
           <Mui.DialogContent>
@@ -98,7 +84,6 @@ export default function PathInputDialog(props) {
               <Mui.TextField value={inputValue} name="data" label="Path" variant="filled" margin="normal" fullWidth onChange={(event) => {
                 setInputValue(event.target.value)
                 if (event.target.value === '/') {
-                  console.log("back to root directory, no need to refresh")
                   refreshCandidateList("/")
                 } else if (event.target.value.endsWith('/')) {
                   console.log("yikes", event.target.value.substring(0, event.target.value.length - 1))

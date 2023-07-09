@@ -1,8 +1,11 @@
 import * as React from 'react'
 import * as Mui from '../Components'
 import PathInputDialog from './PathInputDialog'
+import ItemUploadDialog from './ItemUploadDialog'
 
 import * as Api from '../Api'
+import axios from 'axios'
+import { formLabelClasses } from '@mui/material'
 
 function splitPath(pathStr) {
   if (pathStr === "/")
@@ -25,10 +28,20 @@ function defaultPathInputDialogState() {
   return { "title": "", "message": "", onCancel: () => { }, onOk: (data) => { }, dirOnly: false, "state": false }
 }
 
+function defaultCreateFolderDialogState() {
+  return { "path": "", onOk: () => { }, onCancel: () => { }, "state": false }
+}
+
+function defaultItemUploadDialogState() {
+  return { onUpload: (data) => { }, message: "", title: "", acceptedType: "", allowMultiFile: false, onOk: () => { }, onCancel: () => { }, "state": false }
+}
+
 export default function Drive(props) {
   let [confirmDialogState, setConfirmDialogState] = React.useState(defaultConfirmDialogState())
   let [itemRenameDialogState, setItemRenameDialogState] = React.useState(defaultItemRenameDialogState())
   let [pathInputDialogState, setPathInputDialogState] = React.useState(defaultPathInputDialogState())
+  let [createFolderDialogState, setCreateFolderDialogState] = React.useState(defaultCreateFolderDialogState())
+  let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
 
   let [previewOpen, setPreviewOpen] = React.useState(false)
   let [alertOpen, setAlertOpen] = React.useState(false)
@@ -54,6 +67,48 @@ export default function Drive(props) {
             OK
           </Mui.Button>
         </Mui.DialogActions>
+      </Mui.Dialog>
+    )
+  }
+
+
+  function CreateFolderDialog(props) {
+    let handleSubmit = (formData) => {
+      let name = formData.get('name')
+      Api.driveCreateDir(props.path, name).then((data) => {
+        if (data.data.ok) {
+          props.onOk()
+        } else {
+          setAlertDetail({ "type": "error", "title": "Error", "message": `Error creating folder: ${data.data.data}` })
+          setAlertOpen(true)
+          props.onCancel()
+        }
+      }).catch((err) => {
+        setAlertDetail({ "type": "error", "title": "Error", "message": `Error creating folder: NetworkError` })
+        setAlertOpen(true)
+        props.onCancel()
+      })
+    }
+
+    return (
+      <Mui.Dialog onClose={() => { props.onCancel() }} open={props.state}>
+        <Mui.Box component="form" noValidate autoComplete="off" onSubmit={(event) => { event.preventDefault(); handleSubmit(new FormData(event.currentTarget)) }}>
+          <div>
+            <Mui.DialogTitle>Create folder</Mui.DialogTitle>
+            <Mui.DialogContent>
+              <Mui.Typography variant='body2' color='text.secondary'>
+                Enter the name for folder
+                <Mui.TextField name="name" label="Folder name" variant="filled" margin="normal" fullWidth />
+              </Mui.Typography>
+            </Mui.DialogContent>
+            <Mui.DialogActions>
+              <Mui.Button onClick={() => { props.onCancel() }}>Cancel</Mui.Button>
+              <Mui.Button type="submit" autoFocus>
+                OK
+              </Mui.Button>
+            </Mui.DialogActions>
+          </div>
+        </Mui.Box>
       </Mui.Dialog>
     )
   }
@@ -149,7 +204,7 @@ export default function Drive(props) {
             }
           }).catch((err) => {
             setAlertDetail({ "type": "error", "title": "Error", "message": `Error moving item: NetworkError` })
-              setAlertOpen(true)
+            setAlertOpen(true)
           })
         },
         onCancel: () => {
@@ -251,6 +306,8 @@ export default function Drive(props) {
   return (
     <Mui.Card sx={{ width: props.width }}>
       <Mui.CardContent>
+        <ItemUploadDialog title={itemUploadDialogState.title} message={itemUploadDialogState.message} allowMultiFile={itemUploadDialogState.allowMultiFile} acceptedType={itemUploadDialogState.acceptedType} state={itemUploadDialogState.state} onUpload={itemUploadDialogState.onUpload} onOk={itemUploadDialogState.onOk} onCancel={itemUploadDialogState.onCancel} />
+        <CreateFolderDialog path={createFolderDialogState.path} state={createFolderDialogState.state} onOk={createFolderDialogState.onOk} onCancel={createFolderDialogState.onCancel} />
         <PathInputDialog title={pathInputDialogState.title} message={pathInputDialogState.message} state={pathInputDialogState.state} onOk={pathInputDialogState.onOk} onCancel={pathInputDialogState.onCancel} dirOnly={pathInputDialogState.dirOnly} />
         <ItemRenameDialog origin={itemRenameDialogState.origin} path={itemRenameDialogState.path} state={itemRenameDialogState.state} onOk={itemRenameDialogState.onOk} onCancel={itemRenameDialogState.onCancel}></ItemRenameDialog>
         <ConfirmDialog title={confirmDialogState.title} message={confirmDialogState.message} state={confirmDialogState.state} onOk={confirmDialogState.onOk} onCancel={confirmDialogState.onCancel}></ConfirmDialog>
@@ -279,9 +336,37 @@ export default function Drive(props) {
         </Mui.Typography>
         {<div style={{ marginTop: "10px" }}></div>}
         <Mui.ButtonGroup variant="outlined" >
-          <Mui.Button>Create folder</Mui.Button>
+          <Mui.Button onClick={() => {
+            setCreateFolderDialogState({ "path": driveInfo.path, "state": true, onOk: () => { setCreateFolderDialogState(defaultCreateFolderDialogState()); updateDriveInfo() }, onCancel: () => { setCreateFolderDialogState(defaultCreateFolderDialogState()) } })
+          }}>Create folder</Mui.Button>
           <Mui.Button onClick={() => { updateDriveInfo() }}>Refresh</Mui.Button>
-          <Mui.Button>Upload file</Mui.Button>
+          <Mui.Button onClick={() => {
+            setItemUploadDialogState({
+              title: "Upload files", message: "", acceptedType: "*/*",
+              allowMultiFile: true,
+              onOk: (formData) => {
+                setAlertDetail({ "type": "info", "title": "Uploading...", "message": `Please be patient, and DO NOT close the dialog.` })
+                setAlertOpen(true)
+                Api.driveUpload(driveInfo.path, formData).then((data) => {
+                  if (data.data.ok) {
+                    setAlertDetail({ "type": "success", "title": "Success", "message": `Finished uploading to ${driveInfo.path}` })
+                    setAlertOpen(true)
+                  } else {
+                    setAlertDetail({ "type": "error", "title": "Error", "message": `Error uploading files: ${data.data.data}` })
+                    setAlertOpen(true)
+                  }
+                  setItemUploadDialogState(defaultItemUploadDialogState())
+                  updateDriveInfo()
+                }).catch((err) => {
+                  setAlertDetail({ "type": "error", "title": "Error", "message": `Error uploading files: NetworkError` })
+                  setAlertOpen(true)
+                  setItemUploadDialogState(defaultItemUploadDialogState())
+                })
+              },
+              onCancel: () => { setItemUploadDialogState(defaultItemUploadDialogState()) },
+              state: true
+            })
+          }}>Upload file</Mui.Button>
         </Mui.ButtonGroup>
         {<div style={{ marginTop: "10px" }}></div>}
         <Mui.TableContainer component={Mui.Paper} >
@@ -296,6 +381,19 @@ export default function Drive(props) {
               </Mui.TableRow>
             </Mui.TableHead>
             <Mui.TableBody>
+              {
+                driveInfo.path !== "/" && <Mui.TableRow hover key={-1} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <Mui.TableCell component="th" scope="row">
+                    <Mui.Icons.Folder />
+                  </Mui.TableCell>
+                  <Mui.TableCell component="th" scope="row" onClick={() => { driveInfo.path = Api.dirname(driveInfo.path); updateDriveInfo() }}>
+                    ..
+                  </Mui.TableCell>
+                  <Mui.TableCell >None</Mui.TableCell>
+                  <Mui.TableCell >None</Mui.TableCell>
+                  <Mui.TableCell ></Mui.TableCell>
+                </Mui.TableRow>
+              }
               {rawTableRows}
             </Mui.TableBody>
           </Mui.Table>
