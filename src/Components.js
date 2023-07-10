@@ -44,6 +44,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -97,5 +98,5 @@ export {
   Profile, Tab, Tabs, Drive, Breadcrumbs, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Backdrop, ButtonGroup, theme, Dialog,
   DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
-  imgBackground3
+  imgBackground3, ListItemAvatar
 }

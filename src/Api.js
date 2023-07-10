@@ -50,8 +50,28 @@ function driveUpload(path, data) {
   return axios.post(`/api/xms/v1/drive/upload?path=${encodeURIComponent(path)}`, data)
 }
 
+function userAvatarUpdate(data) {
+  return axios.post(`/api/xms/v1/user/avatar/update`, data)
+}
+
+function userHeadImgUpdate(data) {
+  return axios.post(`/api/xms/v1/user/headimg/update`, data)
+}
+
 function getDownloadPath(path) {
   return `/api/xms/v1/drive/file?path=` + encodeURIComponent(path)
+}
+
+function userShareLinks(uid) {
+  return axios.get(`/api/xms/v1/user/${uid}/sharelinks`)
+}
+
+function userUsernameUpdate(newUsername) {
+  return axios.post(`/api/xms/v1/user/username/update`, {newUsername: newUsername})
+}
+
+function userSloganUpdate(newSlogan) {
+  return axios.post(`/api/xms/v1/user/slogan/update`, {newSlogan: newSlogan})
 }
 
 function submitLogin(username, password) {
@@ -93,5 +113,6 @@ function userInfo(uid) {
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
-  dirname
+  dirname, userShareLinks, userAvatarUpdate, userHeadImgUpdate, userSloganUpdate,
+  userUsernameUpdate
 }

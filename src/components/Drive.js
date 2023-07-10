@@ -33,7 +33,7 @@ function defaultCreateFolderDialogState() {
 }
 
 function defaultItemUploadDialogState() {
-  return { onUpload: (data) => { }, message: "", title: "", acceptedType: "", allowMultiFile: false, onOk: () => { }, onCancel: () => { }, "state": false }
+  return { onUpload: (data) => { }, message: "", title: "", acceptedType: "", allowMultiFile: false, onOk: () => { }, onCancel: () => { }, "state": false, formKey: "" }
 }
 
 export default function Drive(props) {
@@ -277,11 +277,11 @@ export default function Drive(props) {
     if (driveInfo.info.list[index].mime.startsWith("application")) {
       setRawPreviewComponent(<Mui.Typography variant='body2' color="text.primary">Preview not available</Mui.Typography>)
     } else if (driveInfo.info.list[index].mime.startsWith('video')) {
-      setRawPreviewComponent(<video style={{maxWidth: "75%"}} controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></video>)
+      setRawPreviewComponent(<video style={{ maxWidth: "75%" }} controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></video>)
     } else if (driveInfo.info.list[index].mime.startsWith('audio')) {
       setRawPreviewComponent(<audio controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></audio>)
     } else if (driveInfo.info.list[index].mime.startsWith('image')) {
-      setRawPreviewComponent(<img style={{maxWidth: "75%"}} src={Api.getDownloadPath(driveInfo.info.list[index].path)} alt="preview" />)
+      setRawPreviewComponent(<img style={{ maxWidth: "75%" }} src={Api.getDownloadPath(driveInfo.info.list[index].path)} alt="preview" />)
     }
     setPreviewOpen(true)
   }
@@ -316,12 +316,12 @@ export default function Drive(props) {
   return (
     <Mui.Card sx={{ width: props.width }}>
       <Mui.CardContent>
-        <ItemUploadDialog title={itemUploadDialogState.title} message={itemUploadDialogState.message} allowMultiFile={itemUploadDialogState.allowMultiFile} acceptedType={itemUploadDialogState.acceptedType} state={itemUploadDialogState.state} onUpload={itemUploadDialogState.onUpload} onOk={itemUploadDialogState.onOk} onCancel={itemUploadDialogState.onCancel} />
+        <ItemUploadDialog title={itemUploadDialogState.title} message={itemUploadDialogState.message} allowMultiFile={itemUploadDialogState.allowMultiFile} acceptedType={itemUploadDialogState.acceptedType} formKey={itemUploadDialogState.formKey} state={itemUploadDialogState.state} onUpload={itemUploadDialogState.onUpload} onOk={itemUploadDialogState.onOk} onCancel={itemUploadDialogState.onCancel} />
         <CreateFolderDialog path={createFolderDialogState.path} state={createFolderDialogState.state} onOk={createFolderDialogState.onOk} onCancel={createFolderDialogState.onCancel} />
         <PathInputDialog title={pathInputDialogState.title} message={pathInputDialogState.message} state={pathInputDialogState.state} onOk={pathInputDialogState.onOk} onCancel={pathInputDialogState.onCancel} dirOnly={pathInputDialogState.dirOnly} />
         <ItemRenameDialog origin={itemRenameDialogState.origin} path={itemRenameDialogState.path} state={itemRenameDialogState.state} onOk={itemRenameDialogState.onOk} onCancel={itemRenameDialogState.onCancel}></ItemRenameDialog>
         <ConfirmDialog title={confirmDialogState.title} message={confirmDialogState.message} state={confirmDialogState.state} onOk={confirmDialogState.onOk} onCancel={confirmDialogState.onCancel}></ConfirmDialog>
-        <Mui.Snackbar open={alertOpen} autoHideDuration={6000} >
+        <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
           <Mui.Alert severity={alertDetail.type} action={
             <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >
               <Mui.Icons.Close fontSize="inherit" />
@@ -334,7 +334,7 @@ export default function Drive(props) {
         <Mui.Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={previewOpen}
-          onClick={() => {setRawPreviewComponent(<></>);setPreviewOpen(false)}}
+          onClick={() => { setRawPreviewComponent(<></>); setPreviewOpen(false) }}
         >
           {rawPreviewComponent}
         </Mui.Backdrop>
@@ -354,7 +354,7 @@ export default function Drive(props) {
           <Mui.Button onClick={() => {
             setItemUploadDialogState({
               title: "Upload files", message: "", acceptedType: "*/*",
-              allowMultiFile: true,
+              allowMultiFile: true, formKey: "",
               onOk: (formData) => {
                 setAlertDetail({ "type": "info", "title": "Uploading...", "message": `Please be patient, and DO NOT close the dialog.` })
                 setAlertOpen(true)
@@ -385,10 +385,10 @@ export default function Drive(props) {
             <Mui.TableHead>
               <Mui.TableRow>
                 <Mui.TableCell width="32px"></Mui.TableCell>
-                <Mui.TableCell>Filename</Mui.TableCell>
-                <Mui.TableCell >MIME</Mui.TableCell>
-                <Mui.TableCell >Last modified</Mui.TableCell>
-                <Mui.TableCell >Actions</Mui.TableCell>
+                <Mui.TableCell>Name</Mui.TableCell>
+                <Mui.TableCell>MIME</Mui.TableCell>
+                <Mui.TableCell>Last modified</Mui.TableCell>
+                <Mui.TableCell>Actions</Mui.TableCell>
               </Mui.TableRow>
             </Mui.TableHead>
             <Mui.TableBody>

@@ -1,12 +1,10 @@
 import * as React from 'react'
 import * as Mui from '../Components'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import loginBackground from '../assets/loginBackground.jpg'
 
 import * as Api from '../Api'
-import { useNavigate, useHref } from "react-router-dom"
-import { Icon } from '@mui/material'
 import PropTypes from 'prop-types'
+
+import ItemUploadDialog from './ItemUploadDialog'
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -42,10 +40,256 @@ function a11yProps(index) {
 }
 
 export default function Profile(props) {
+  let defaultAlertState = () => ({ "type": "error", "title": "", "message": "" })
+  let defaultItemUploadDialogState = () => (
+    { onUpload: (data) => { }, message: "", title: "", acceptedType: "", allowMultiFile: false, onOk: () => { }, onCancel: () => { }, state: false, formKey: "" }
+  )
+  let defaultTextChangeDialogState = () => ({
+    title: "", message: "", value: "", state: false, onOk: () => { }, onCancel: () => { }
+  })
+
+
   let [profileTab, setProfileTab] = React.useState(0)
+  let [sharedLinksList, setSharedLinksList] = React.useState([])
+  let [alertDetail, setAlertDetail] = React.useState(defaultAlertState())
+  let [alertOpen, setAlertOpen] = React.useState(false)
+  let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
+  let [textChangeDialogState, setTextChangeDialogState] = React.useState(defaultTextChangeDialogState())
+
+  let updateSharedLinksList = () => {
+    Api.userShareLinks(props.userInfo.id).then((data) => {
+      if (data.data.ok) {
+        setSharedLinksList(data.data.data)
+      } else {
+        setAlertDetail({ type: "error", title: "Error", message: `Error updating share links list: ${data.data.data}` })
+        setAlertOpen(true)
+      }
+    }).catch((err) => {
+      setAlertDetail({ type: "error", title: "Error", message: `Error updating share links list: NetworkError` })
+      setAlertOpen(true)
+    })
+  }
+
+  let handleChangeSloganOnClick = () => {
+    setTextChangeDialogState({
+      title: "Change slogan",
+      message: "New slogan",
+      value: "",
+      state: true,
+      onOk: (arg) => {
+        Api.userSloganUpdate(arg).then((data) => {
+          if (data.data.ok) {
+            window.location.reload()
+          } else {
+            setAlertDetail({ type: "error", title: "Error", message: `Error updating username: ${data.data.data}` })
+            setAlertOpen(true)
+          }
+          setTextChangeDialogState(defaultTextChangeDialogState())
+        }).catch((err) => {
+          setAlertDetail({ type: "error", title: "Error", message: `Error updating username: NetworkError` })
+          setAlertOpen(true)
+          setTextChangeDialogState(defaultTextChangeDialogState())
+        })
+      },
+      onCancel: () => setTextChangeDialogState(defaultTextChangeDialogState())
+    })
+  }
+
+  let handleChangeUsernameOnClick = () => {
+    setTextChangeDialogState({
+      title: "Change username",
+      message: "New username",
+      value: "",
+      state: true,
+      onOk: (arg) => {
+        Api.userUsernameUpdate(arg).then((data) => {
+          if (data.data.ok) {
+            window.location.reload()
+          } else {
+            setAlertDetail({ type: "error", title: "Error", message: `Error updating username: ${data.data.data}` })
+            setAlertOpen(true)
+          }
+          setTextChangeDialogState(defaultTextChangeDialogState())
+        }).catch((err) => {
+          setAlertDetail({ type: "error", title: "Error", message: `Error updating username: NetworkError` })
+          setAlertOpen(true)
+          setTextChangeDialogState(defaultTextChangeDialogState())
+        })
+      },
+      onCancel: () => setTextChangeDialogState(defaultTextChangeDialogState())
+    })
+  }
+
+  let handleChangeUserHeadImgOnClick = () => {
+    setItemUploadDialogState({
+      title: "Change head image", message: "", acceptedType: "image/*",
+      allowMultiFile: false, state: true, formKey: "image",
+      onOk: (formData) => {
+        Api.userHeadImgUpdate(formData).then((data) => {
+          if (data.data.ok) {
+            window.location.reload()
+          } else {
+            setAlertDetail({ type: "error", title: "Error", message: `Error updating user headImg: ${data.data.data}` })
+            setAlertOpen(true)
+          }
+          setItemUploadDialogState(defaultItemUploadDialogState())
+        }).catch((err) => {
+          setAlertDetail({ type: "error", title: "Error", message: `Error updating user headImg: NetworkError` })
+          setAlertOpen(true)
+          setItemUploadDialogState(defaultItemUploadDialogState())
+        })
+      }, onCancel: () => {
+        setItemUploadDialogState(defaultItemUploadDialogState())
+      }
+    })
+  }
+
+  let handleChangeUserAvatarOnClick = () => {
+    setItemUploadDialogState({
+      title: "Change avatar", message: "", acceptedType: "image/*",
+      allowMultiFile: false, state: true, formKey: "image",
+      onOk: (formData) => {
+        Api.userAvatarUpdate(formData).then((data) => {
+          if (data.data.ok) {
+            window.location.reload()
+          } else {
+            setAlertDetail({ type: "error", title: "Error", message: `Error updating user avatar: ${data.data.data}` })
+            setAlertOpen(true)
+          }
+          setItemUploadDialogState(defaultItemUploadDialogState())
+        }).catch((err) => {
+          setAlertDetail({ type: "error", title: "Error", message: `Error updating user avatar: NetworkError` })
+          setAlertOpen(true)
+          setItemUploadDialogState(defaultItemUploadDialogState())
+        })
+      }, onCancel: () => {
+        setItemUploadDialogState(defaultItemUploadDialogState())
+      }
+    })
+  }
+
+  let SharedFiles = () => (
+    <Mui.TableContainer component={Mui.Paper} >
+      <Mui.Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Mui.TableHead>
+          <Mui.TableRow>
+            <Mui.TableCell width="32px"></Mui.TableCell>
+            <Mui.TableCell>Link</Mui.TableCell>
+            <Mui.TableCell sx={{ maxWidth: "50%" }}>Path</Mui.TableCell>
+            <Mui.TableCell>Actions</Mui.TableCell>
+          </Mui.TableRow>
+        </Mui.TableHead>
+        <Mui.TableBody>
+          {sharedLinksList.map((row, index) => (
+            <Mui.TableRow hover key={-1} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <Mui.TableCell>{row.id}</Mui.TableCell>
+              <Mui.TableCell>{row.path}</Mui.TableCell>
+              <Mui.TableCell>None</Mui.TableCell>
+            </Mui.TableRow>
+          ))}
+        </Mui.TableBody>
+      </Mui.Table>
+    </Mui.TableContainer>
+  )
+
+  let SharedPlaylists = () => {
+
+  }
+
+  let EditProfile = () => {
+    let [newUserInfo, setNewUserInfo] = React.useState({
+      name: props.userInfo.name,
+      slogan: props.userInfo.slogan
+    })
+    return (
+      <Mui.List>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserAvatarOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.AccountCircle />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary="User Avatar"
+          />
+        </Mui.ListItem>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserHeadImgOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.Photo />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary="Head Image"
+          />
+        </Mui.ListItem>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUsernameOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.Badge />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary={`Username`}
+            secondary={`${newUserInfo.name}`}
+          />
+        </Mui.ListItem>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeSloganOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.Description />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary="Slogan"
+            secondary={`${newUserInfo.slogan}`}
+          />
+        </Mui.ListItem>
+      </Mui.List>
+    )
+  }
 
   return (
     <Mui.Card sx={{ width: props.width }}>
+      <Mui.Dialog onClose={() => { textChangeDialogState.onCancel() }} open={textChangeDialogState.state}>
+        <Mui.DialogTitle>{textChangeDialogState.title}</Mui.DialogTitle>
+        <Mui.DialogContent>
+          <Mui.TextField value={textChangeDialogState.value} variant='filled' fullWidth sx={{minWidth: "256px"}} label={textChangeDialogState.message} onChange={(event) => {
+            setTextChangeDialogState({
+              title: textChangeDialogState.title,
+              message: textChangeDialogState.message,
+              value: event.currentTarget.value,
+              state: textChangeDialogState.state,
+              onOk: textChangeDialogState.onOk,
+              onCancel: textChangeDialogState.onCancel
+            })
+            console.log(textChangeDialogState.value, event.currentTarget.value)
+          }} />
+        </Mui.DialogContent>
+        <Mui.DialogActions>
+          <Mui.Button onClick={() => textChangeDialogState.onCancel()}>Cancel</Mui.Button>
+          <Mui.Button onClick={() => textChangeDialogState.onOk(textChangeDialogState.value)}>OK</Mui.Button>
+        </Mui.DialogActions>
+      </Mui.Dialog>
+      <ItemUploadDialog title={itemUploadDialogState.title} message={itemUploadDialogState.message} allowMultiFile={itemUploadDialogState.allowMultiFile} acceptedType={itemUploadDialogState.acceptedType} state={itemUploadDialogState.state} onUpload={itemUploadDialogState.onUpload} onOk={itemUploadDialogState.onOk} onCancel={itemUploadDialogState.onCancel} formKey={itemUploadDialogState.formKey} />
+      <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
+        <Mui.Alert severity={alertDetail.type} action={
+          <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >
+            <Mui.Icons.Close fontSize="inherit" />
+          </Mui.IconButton>
+        }>
+          <Mui.AlertTitle>{alertDetail.title}</Mui.AlertTitle>
+          {alertDetail.message}
+        </Mui.Alert>
+      </Mui.Snackbar>
       <Mui.CardMedia
         sx={{ height: props.headImgHeight }}
         image={`/api/xms/v1/user/${props.userInfo.id}/headimg`}
@@ -73,17 +317,13 @@ export default function Profile(props) {
           </Mui.Tabs>
         </Mui.Box>
         <CustomTabPanel value={profileTab} index={0}>
-          Item One
+          <SharedFiles />
         </CustomTabPanel>
         <CustomTabPanel value={profileTab} index={1}>
-          Item Two
+          <SharedPlaylists />
         </CustomTabPanel>
         <CustomTabPanel value={profileTab} index={2}>
-          <Mui.Grid container spacing={1}>
-            <Mui.Grid item xs={12}>
-              
-            </Mui.Grid>
-          </Mui.Grid>
+          <EditProfile />
         </CustomTabPanel>
       </Mui.CardContent>
     </Mui.Card>

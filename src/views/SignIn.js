@@ -72,7 +72,7 @@ export default function SignInSide() {
               alignItems: 'center',
             }}
           >
-            <Mui.Snackbar open={alertOpen} autoHideDuration={6000} >
+            <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
               <Mui.Alert severity={alertDetail.type} action={
                 <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false); }} >
                   <Mui.Icons.Close fontSize="inherit" />
