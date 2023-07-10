@@ -354,7 +354,7 @@ export default function Drive(props) {
           <Mui.Button onClick={() => {
             setItemUploadDialogState({
               title: "Upload files", message: "", acceptedType: "*/*",
-              allowMultiFile: true, formKey: "",
+              allowMultiFile: true, formKey: "yoimiya",
               onOk: (formData) => {
                 setAlertDetail({ "type": "info", "title": "Uploading...", "message": `Please be patient, and DO NOT close the dialog.` })
                 setAlertOpen(true)
