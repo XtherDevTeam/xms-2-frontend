@@ -43,6 +43,7 @@ export default function Drive(props) {
   let [createFolderDialogState, setCreateFolderDialogState] = React.useState(defaultCreateFolderDialogState())
   let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
 
+  let [rawPreviewComponent, setRawPreviewComponent] = React.useState(<></>)
   let [previewOpen, setPreviewOpen] = React.useState(false)
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
@@ -175,7 +176,7 @@ export default function Drive(props) {
         driveInfo.path = driveInfo.info.list[index].path;
         updateDriveInfo()
       } else {
-        // TODO: finish file preview
+        previewFile(index)
       }
     } else if (event === "delete") {
       Api.driveDelete(driveInfo.info.list[index].path).then((data) => {
@@ -273,7 +274,16 @@ export default function Drive(props) {
   }
 
   let previewFile = (index) => {
-
+    if (driveInfo.info.list[index].mime.startsWith("application")) {
+      setRawPreviewComponent(<Mui.Typography variant='body2' color="text.primary">Preview not available</Mui.Typography>)
+    } else if (driveInfo.info.list[index].mime.startsWith('video')) {
+      setRawPreviewComponent(<video style={{maxWidth: "75%"}} controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></video>)
+    } else if (driveInfo.info.list[index].mime.startsWith('audio')) {
+      setRawPreviewComponent(<audio controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></audio>)
+    } else if (driveInfo.info.list[index].mime.startsWith('image')) {
+      setRawPreviewComponent(<img style={{maxWidth: "75%"}} src={Api.getDownloadPath(driveInfo.info.list[index].path)} alt="preview" />)
+    }
+    setPreviewOpen(true)
   }
 
   let updateDriveInfo = () => {
@@ -324,8 +334,9 @@ export default function Drive(props) {
         <Mui.Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={previewOpen}
+          onClick={() => {setRawPreviewComponent(<></>);setPreviewOpen(false)}}
         >
-
+          {rawPreviewComponent}
         </Mui.Backdrop>
         <Mui.Breadcrumbs aria-label="breadcrumb">
           {breadcrumb}
