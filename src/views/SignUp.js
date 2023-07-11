@@ -93,6 +93,7 @@ export default function SignUpSide() {
                 margin="normal"
                 required
                 fullWidth
+                variant='filled'
                 id="username"
                 label="Username"
                 name="username"
@@ -103,6 +104,7 @@ export default function SignUpSide() {
                 margin="normal"
                 required
                 fullWidth
+                variant='filled'
                 name="password"
                 label="Password"
                 type="password"
@@ -113,6 +115,7 @@ export default function SignUpSide() {
                 margin="normal"
                 required
                 fullWidth
+                variant='filled'
                 name="slogan"
                 label="Slogan"
                 id="slogan"

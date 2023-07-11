@@ -5,6 +5,7 @@ import * as Api from '../Api'
 import PropTypes from 'prop-types'
 
 import ItemUploadDialog from './ItemUploadDialog'
+import { DataArray } from '@mui/icons-material'
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,6 +48,9 @@ export default function Profile(props) {
   let defaultTextChangeDialogState = () => ({
     title: "", message: "", value: "", state: false, onOk: () => { }, onCancel: () => { }
   })
+  let defaultPasswordChangeDialogState = () => ({
+    title: "", message: "", state: false, onOk: (oldPassword, newPassword) => { }, onCancel: () => { }
+  })
 
 
   let [profileTab, setProfileTab] = React.useState(0)
@@ -55,6 +59,61 @@ export default function Profile(props) {
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
   let [textChangeDialogState, setTextChangeDialogState] = React.useState(defaultTextChangeDialogState())
+  let [passwordChangeDialogState, setPasswordChangeDialogState] = React.useState(defaultPasswordChangeDialogState())
+
+  let PasswordChangeDialog = () => {
+    return (
+      <Mui.Dialog onClose={() => { passwordChangeDialogState.onCancel() }} open={passwordChangeDialogState.state}>
+        <Mui.Box component="form" noValidate onSubmit={(event) => {
+          event.preventDefault()
+          const data = new FormData(event.currentTarget)
+          if (data.get("newPassword") === data.get("confirm")) { passwordChangeDialogState.onOk(data.get("oldPassword"), data.get("newPassword")) }
+          else {
+            setAlertDetail({ type: "error", title: "Error", message: `these passwords don't match` })
+            setAlertOpen(true)
+          }
+        }} sx={{ mt: 1 }}>
+          <Mui.DialogTitle>{passwordChangeDialogState.title}</Mui.DialogTitle>
+          <Mui.DialogContent>
+            <Mui.Typography variant='body2'>
+              {passwordChangeDialogState.message}
+            </Mui.Typography>
+            <Mui.TextField
+              margin="normal"
+              required
+              fullWidth
+              variant='filled'
+              name="oldPassword"
+              label="Old password"
+              type="password"
+            />
+            <Mui.TextField
+              margin="normal"
+              required
+              fullWidth
+              variant='filled'
+              name="newPassword"
+              label="New password"
+              type="password"
+            />
+            <Mui.TextField
+              margin="normal"
+              required
+              fullWidth
+              variant='filled'
+              name="confirm"
+              label="Re-enter the new password"
+              type="password"
+            />
+          </Mui.DialogContent>
+          <Mui.DialogActions>
+            <Mui.Button onClick={() => passwordChangeDialogState.onCancel()}>Cancel</Mui.Button>
+            <Mui.Button type="submit">OK</Mui.Button>
+          </Mui.DialogActions>
+        </Mui.Box>
+      </Mui.Dialog>
+    )
+  }
 
   let updateSharedLinksList = () => {
     Api.userShareLinks(props.userInfo.id).then((data) => {
@@ -168,6 +227,45 @@ export default function Profile(props) {
     })
   }
 
+  let handleChangeUserPasswordOnClick = () => {
+    setPasswordChangeDialogState({
+      title: "Change password",
+      message: "Please remember you password. Once you forget it, you will not be able to use this account again.",
+      state: true,
+      onOk: (oldPassword, newPassword) => {
+        Api.userPasswordUpdate(oldPassword, newPassword).then((data) => {
+          if (data.data.ok) {
+            setAlertDetail({ type: "success", title: "Success", message: `Your password has been changed successfully, reloading window.` })
+            setAlertOpen(true)
+            Api.signOut().then((data) => {
+              if (data.data.ok) {
+                window.location.reload()
+              } else {
+                setAlertDetail({ type: "error", title: "Error", message: `Error logging out: ${data.data.data}` })
+                setAlertOpen(true)
+              }
+            }).catch((err) => {
+              setAlertDetail({ type: "error", title: "Error", message: `Error logging out: NetworkError` })
+              setAlertOpen(true)
+            })
+            setPasswordChangeDialogState(defaultPasswordChangeDialogState())
+          } else {
+            setAlertDetail({ type: "error", title: "Error", message: `Error changing password: ${data.data.data}` })
+            setAlertOpen(true)
+            setPasswordChangeDialogState(defaultPasswordChangeDialogState())
+          }
+        }).catch((err) => {
+          setAlertDetail({ type: "error", title: "Error", message: `Error changing password: NetworkError` })
+          setAlertOpen(true)
+          setPasswordChangeDialogState(defaultPasswordChangeDialogState())
+        })
+      },
+      onCancel: () => {
+        setPasswordChangeDialogState(defaultPasswordChangeDialogState())
+      }
+    })
+  }
+
   let SharedFiles = () => (
     <Mui.TableContainer component={Mui.Paper} >
       <Mui.Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -253,16 +351,29 @@ export default function Profile(props) {
             secondary={`${newUserInfo.slogan}`}
           />
         </Mui.ListItem>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserPasswordOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.Key />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary="Password"
+          />
+        </Mui.ListItem>
       </Mui.List>
     )
   }
 
   return (
     <Mui.Card sx={{ width: props.width }}>
+      <PasswordChangeDialog />
       <Mui.Dialog onClose={() => { textChangeDialogState.onCancel() }} open={textChangeDialogState.state}>
         <Mui.DialogTitle>{textChangeDialogState.title}</Mui.DialogTitle>
         <Mui.DialogContent>
-          <Mui.TextField value={textChangeDialogState.value} variant='filled' fullWidth sx={{minWidth: "256px"}} label={textChangeDialogState.message} onChange={(event) => {
+          <Mui.TextField value={textChangeDialogState.value} variant='filled' fullWidth sx={{ minWidth: "256px" }} label={textChangeDialogState.message} onChange={(event) => {
             setTextChangeDialogState({
               title: textChangeDialogState.title,
               message: textChangeDialogState.message,

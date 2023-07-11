@@ -91,6 +91,7 @@ export default function SignInSide() {
             <Mui.Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <Mui.TextField
                 margin="normal"
+                variant='filled'
                 required
                 fullWidth
                 id="username"
@@ -103,6 +104,7 @@ export default function SignInSide() {
                 margin="normal"
                 required
                 fullWidth
+                variant='filled'
                 name="password"
                 label="Password"
                 type="password"

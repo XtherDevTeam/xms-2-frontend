@@ -66,6 +66,17 @@ function userShareLinks(uid) {
   return axios.get(`/api/xms/v1/user/${uid}/sharelinks`)
 }
 
+function userPasswordUpdate(oldPassword, newPassword) {
+  return axios.post(`/api/xms/v1/user/password/update`, {
+    oldPassword: oldPassword,
+    newPassword: newPassword
+  })
+}
+
+function shareLinkCreate(path) {
+  return axios.post(`/api/xms/v1/sharelink/create`, {path: path})
+}
+
 function userUsernameUpdate(newUsername) {
   return axios.post(`/api/xms/v1/user/username/update`, {newUsername: newUsername})
 }
@@ -114,5 +125,5 @@ export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
   dirname, userShareLinks, userAvatarUpdate, userHeadImgUpdate, userSloganUpdate,
-  userUsernameUpdate
+  userUsernameUpdate, shareLinkCreate, userPasswordUpdate
 }

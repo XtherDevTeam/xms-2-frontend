@@ -228,6 +228,26 @@ export default function Drive(props) {
     }
   }
 
+  let handleShareOnClick = (index) => {
+    console.log("wdnmd", index)
+    Api.shareLinkCreate(driveInfo.info.list[index].path).then((data) => {
+      if (data.data.ok) {
+        setConfirmDialogState({
+          title: "Share link created",
+          message: <><span style={{fontWeight: "bold"}}>Your link</span>: {window.location.protocol}//{window.location.host}/sharelink/{data.data.data}</>,
+          onOk: () => { setConfirmDialogState(defaultConfirmDialogState()) },
+          onCancel: () => { setConfirmDialogState(defaultConfirmDialogState()) }, state: true
+        })
+      } else {
+        setAlertDetail({ "type": "error", "title": "Error", "message": `Error creating sharelink: ${data.data.data}` })
+        setAlertOpen(true)
+      }
+    }).catch((err) => {
+      setAlertDetail({ "type": "error", "title": "Error", "message": `Error creating share link: NetworkError` })
+      setAlertOpen(true)
+    })
+  }
+
   let tableRows = () => {
     return (driveInfo.info.list.map((row, index) => (
       <Mui.TableRow
@@ -239,12 +259,12 @@ export default function Drive(props) {
           {row.type === "file" && <Mui.Icons.InsertDriveFile />}
           {row.type === "dir" && <Mui.Icons.Folder />}
         </Mui.TableCell>
-        <Mui.TableCell component="th" scope="row" onClick={() => { handleActionsClick(index, "open") }}>
+        <Mui.TableCell style={{ width: "40%", overflow: "hidden" }} onClick={() => { handleActionsClick(index, "open") }}>
           {row.filename}
         </Mui.TableCell>
-        <Mui.TableCell >{row.mime}</Mui.TableCell>
-        <Mui.TableCell >{row.lastModified}</Mui.TableCell>
-        <Mui.TableCell >
+        <Mui.TableCell><p style={{ width: "100px", overflow: "hidden" }}>{row.mime}</p></Mui.TableCell>
+        <Mui.TableCell>{row.lastModified}</Mui.TableCell>
+        <Mui.TableCell>
           <Mui.IconButton aria-label="Copy" onClick={() => { handleActionsClick(index, "copy") }}>
             <Mui.Icons.FileCopy />
           </Mui.IconButton>
@@ -263,6 +283,12 @@ export default function Drive(props) {
             })
           }}>
             <Mui.Icons.Delete />
+          </Mui.IconButton>
+          <Mui.IconButton aria-label="share" onClick={() => {
+            console.log("wdnmd?")
+            handleShareOnClick(index)
+          }}>
+            <Mui.Icons.Share />
           </Mui.IconButton>
           {row.type == "file" &&
             <Mui.IconButton aria-label="download" onClick={() => { handleActionsClick(index, "download") }}>
@@ -385,7 +411,7 @@ export default function Drive(props) {
             <Mui.TableHead>
               <Mui.TableRow>
                 <Mui.TableCell width="32px"></Mui.TableCell>
-                <Mui.TableCell>Name</Mui.TableCell>
+                <Mui.TableCell style={{ width: "40%", overflow: "hidden" }}>Name</Mui.TableCell>
                 <Mui.TableCell>MIME</Mui.TableCell>
                 <Mui.TableCell>Last modified</Mui.TableCell>
                 <Mui.TableCell>Actions</Mui.TableCell>
@@ -397,12 +423,12 @@ export default function Drive(props) {
                   <Mui.TableCell component="th" scope="row">
                     <Mui.Icons.Folder />
                   </Mui.TableCell>
-                  <Mui.TableCell component="th" scope="row" onClick={() => { driveInfo.path = Api.dirname(driveInfo.path); updateDriveInfo() }}>
+                  <Mui.TableCell style={{ width: "40%", overflow: "hidden" }} onClick={() => { driveInfo.path = Api.dirname(driveInfo.path); updateDriveInfo() }}>
                     ..
                   </Mui.TableCell>
-                  <Mui.TableCell >None</Mui.TableCell>
-                  <Mui.TableCell >None</Mui.TableCell>
-                  <Mui.TableCell ></Mui.TableCell>
+                  <Mui.TableCell>None</Mui.TableCell>
+                  <Mui.TableCell>None</Mui.TableCell>
+                  <Mui.TableCell></Mui.TableCell>
                 </Mui.TableRow>
               }
               {rawTableRows}

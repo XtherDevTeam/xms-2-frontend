@@ -8,7 +8,7 @@ export default function ItemUploadDialog(props) {
 
   let uploadItems = () => {
     let formData = new FormData()
-    fileList.forEach((file, index) => {console.log("我操你妈：", props.allowMultiFile, props.allowMultiFile ? `${index}` : props.formKey, props.formKey); formData.append(props.allowMultiFile ? `${index}` : props.formKey, file)})
+    fileList.forEach((file, index) => {formData.append(props.allowMultiFile ? `${index}` : props.formKey, file)})
 
     props.onOk(formData)
   }
