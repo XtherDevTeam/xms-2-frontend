@@ -18,6 +18,11 @@ function dirname(pathStr) {
   }
 }
 
+function basename(pathStr) {
+  let paths = pathStr.split("/")
+  return paths[paths.length - 1]
+}
+
 function checkIfLoggedIn() {
   return axios.get("/api/xms/v1/user/status")
 }
@@ -77,6 +82,10 @@ function shareLinkCreate(path) {
   return axios.post(`/api/xms/v1/sharelink/create`, {path: path})
 }
 
+function shareLinkDelete(linkId) {
+  return axios.post(`/api/xms/v1/sharelink/${linkId}/delete`)
+}
+
 function userUsernameUpdate(newUsername) {
   return axios.post(`/api/xms/v1/user/username/update`, {newUsername: newUsername})
 }
@@ -118,12 +127,17 @@ function submitSignup(username, password, slogan) {
 }
 
 function userInfo(uid) {
-  return axios.get(`/api/xms/v1/user/${uid}/info`);
+  return axios.get(`/api/xms/v1/user/${uid}/info`)
+}
+
+function getShareLinkPath(location, linkId) {
+  return `${location.protocol}//${location.host}/sharelink/${linkId}`
 }
 
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
   dirname, userShareLinks, userAvatarUpdate, userHeadImgUpdate, userSloganUpdate,
-  userUsernameUpdate, shareLinkCreate, userPasswordUpdate
+  userUsernameUpdate, shareLinkCreate, userPasswordUpdate, basename, getShareLinkPath,
+  shareLinkDelete
 }

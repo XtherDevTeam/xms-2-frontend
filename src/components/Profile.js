@@ -266,14 +266,34 @@ export default function Profile(props) {
     })
   }
 
+  let handleSharedFileOnClick = (index) => {
+    window.location = Api.getShareLinkPath(window.location, sharedLinksList[index].id)
+  }
+
+  let handleSharedFileDeleteOnClick = (index) => {
+    Api.shareLinkDelete(sharedLinksList[index].id).then((data) => {
+      if (data.data.ok) {
+        setAlertDetail({ type: "success", title: "Success", message: `The share link has deleted successfully.` })
+        setAlertOpen(true)
+        updateSharedLinksList()
+      } else {
+        setAlertDetail({ type: "error", title: "Error", message: `Error deleting share link: ${data.data.data}` })
+        setAlertOpen(true)
+      }
+    }).catch((err) => {
+      setAlertDetail({ type: "error", title: "Error", message: `Error deleting share link: NetworkError` })
+      setAlertOpen(true)
+    })
+  }
+
   let SharedFiles = () => (
     <Mui.TableContainer component={Mui.Paper} >
-      <Mui.Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Mui.Table sx={{ minWidth: 650 }}>
         <Mui.TableHead>
           <Mui.TableRow>
-            <Mui.TableCell width="32px"></Mui.TableCell>
             <Mui.TableCell>Link</Mui.TableCell>
-            <Mui.TableCell sx={{ maxWidth: "50%" }}>Path</Mui.TableCell>
+            <Mui.TableCell style={{ width: "30%", overflow: "hidden" }}>Name</Mui.TableCell>
+            <Mui.TableCell style={{ width: "40%", overflow: "hidden" }}>Path</Mui.TableCell>
             <Mui.TableCell>Actions</Mui.TableCell>
           </Mui.TableRow>
         </Mui.TableHead>
@@ -281,8 +301,17 @@ export default function Profile(props) {
           {sharedLinksList.map((row, index) => (
             <Mui.TableRow hover key={-1} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <Mui.TableCell>{row.id}</Mui.TableCell>
-              <Mui.TableCell>{row.path}</Mui.TableCell>
-              <Mui.TableCell>None</Mui.TableCell>
+              <Mui.TableCell style={{ width: "30%" }} onClick={() => { }}><p style={{ width: "100%", overflow: "hidden" }} onClick={() => {
+                handleSharedFileOnClick(index)
+              }}>{Api.basename(row.path)}</p></Mui.TableCell>
+              <Mui.TableCell style={{ width: "40%" }}><p style={{ width: "100%", overflow: "hidden" }}>{row.path}</p></Mui.TableCell>
+              <Mui.TableCell>
+                <Mui.IconButton aria-label="delete" onClick={() => {
+                  handleSharedFileDeleteOnClick(index)
+                }}>
+                  <Mui.Icons.Delete />
+                </Mui.IconButton>
+              </Mui.TableCell>
             </Mui.TableRow>
           ))}
         </Mui.TableBody>
@@ -366,6 +395,10 @@ export default function Profile(props) {
       </Mui.List>
     )
   }
+
+  React.useEffect(() => {
+    updateSharedLinksList()
+  }, [props])
 
   return (
     <Mui.Card sx={{ width: props.width }}>

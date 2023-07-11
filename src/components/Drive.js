@@ -234,7 +234,7 @@ export default function Drive(props) {
       if (data.data.ok) {
         setConfirmDialogState({
           title: "Share link created",
-          message: <><span style={{fontWeight: "bold"}}>Your link</span>: {window.location.protocol}//{window.location.host}/sharelink/{data.data.data}</>,
+          message: <><span style={{fontWeight: "bold"}}>Your link</span>: {Api.getShareLinkPath(window.location, data.data.data)}</>,
           onOk: () => { setConfirmDialogState(defaultConfirmDialogState()) },
           onCancel: () => { setConfirmDialogState(defaultConfirmDialogState()) }, state: true
         })
