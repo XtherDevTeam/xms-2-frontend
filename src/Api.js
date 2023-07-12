@@ -47,6 +47,10 @@ function driveMove(path, newPath) {
   return axios.post("/api/xms/v1/drive/move", { "path": path, "newPath": newPath },)
 }
 
+function driveCopy(path, newPath) {
+  return axios.post("/api/xms/v1/drive/copy", { "path": path, "newPath": newPath },)
+}
+
 function driveCreateDir(path, name) {
   return axios.post("/api/xms/v1/drive/createdir", { "path": path, "name": name },)
 }
@@ -65,6 +69,14 @@ function userHeadImgUpdate(data) {
 
 function getDownloadPath(path) {
   return `/api/xms/v1/drive/file?path=` + encodeURIComponent(path)
+}
+
+function getPlaylistArtworkPath(pid) {
+  return `/api/xms/v1/music/playlist/${pid}/artwork`
+}
+
+function getSongArtworkPath(sid) {
+  return `/api/xms/v1/music/song/${sid}/artwork`
 }
 
 function userShareLinks(uid) {
@@ -130,6 +142,10 @@ function userInfo(uid) {
   return axios.get(`/api/xms/v1/user/${uid}/info`)
 }
 
+function userPlaylists() {
+  return axios.get(`/api/xms/v1/user/playlists`)
+}
+
 function getShareLinkPath(location, linkId) {
   return `${location.protocol}//${location.host}/sharelink/${linkId}`
 }
@@ -139,5 +155,5 @@ export {
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
   dirname, userShareLinks, userAvatarUpdate, userHeadImgUpdate, userSloganUpdate,
   userUsernameUpdate, shareLinkCreate, userPasswordUpdate, basename, getShareLinkPath,
-  shareLinkDelete
+  shareLinkDelete, driveCopy, getSongArtworkPath, getPlaylistArtworkPath, userPlaylists
 }

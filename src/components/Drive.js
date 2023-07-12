@@ -213,6 +213,30 @@ export default function Drive(props) {
         },
         dirOnly: true
       })
+    } else if (event === "copy") {
+      setPathInputDialogState({
+        title: "Copy to",
+        message: `Enter the copy destination for ${driveInfo.info.list[index].filename}`,
+        state: true,
+        onOk: (newPath) => {
+          setPathInputDialogState(defaultPathInputDialogState())
+          Api.driveCopy(driveInfo.info.list[index].path, newPath).then((data) => {
+            if (data.data.ok) {
+              updateDriveInfo()
+            } else {
+              setAlertDetail({ "type": "error", "title": "Error", "message": `Error copying item: ${data.data.data}` })
+              setAlertOpen(true)
+            }
+          }).catch((err) => {
+            setAlertDetail({ "type": "error", "title": "Error", "message": `Error copying item: NetworkError` })
+            setAlertOpen(true)
+          })
+        },
+        onCancel: () => {
+          setPathInputDialogState(defaultPathInputDialogState())
+        },
+        dirOnly: true
+      })
     } else if (event === "rename") {
       console.log("origin", driveInfo.info.list[index].name)
       setItemRenameDialogState({

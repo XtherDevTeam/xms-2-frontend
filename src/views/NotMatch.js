@@ -11,7 +11,7 @@ export default function NotMatch() {
 
   return (
     <ThemeProvider theme={Mui.theme}>
-      <Mui.Background />
+      <Mui.Background img={Mui.imgBackground3} />
       <Mui.Card sx={{ maxWidth: 500, top: "50%", left: "50%", transform: "translate(-50%, -50%)", position: "absolute" }}>
         <Mui.CardMedia
           sx={{ height: 140 }}
@@ -27,8 +27,8 @@ export default function NotMatch() {
           </Mui.Typography>
         </Mui.CardContent>
         <Mui.CardActions>
-          <Mui.Button size="small" onClick={() => {navigate(-1)}}>Go Back</Mui.Button>
-          <Mui.Button size="small" onClick={() => {navigate("/")}}>Homepage</Mui.Button>
+          <Mui.Button size="small" onClick={() => { navigate(-1) }}>Go Back</Mui.Button>
+          <Mui.Button size="small" onClick={() => { navigate("/") }}>Homepage</Mui.Button>
         </Mui.CardActions>
       </Mui.Card>
     </ThemeProvider>

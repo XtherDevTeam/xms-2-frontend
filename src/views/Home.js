@@ -73,8 +73,8 @@ export default function Home() {
           {alertDetail.message}
         </Mui.Alert>
       </Mui.Snackbar>
-
       <Mui.Box sx={{ display: 'flex', flexGrow: 1 }}>
+        <Mui.BackgroundColor color={Mui.theme.palette.action.hover}></Mui.BackgroundColor>
         <Mui.CssBaseline />
         <Mui.AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Mui.Toolbar>
@@ -89,7 +89,9 @@ export default function Home() {
           sx={{
             width: "20%",
             flexShrink: 0,
-            [`& .MuiDrawer-paper`]: { width: "20%", boxSizing: 'border-box' },
+            [`& .MuiDrawer-paper`]: {
+              width: "20%", boxSizing: 'border-box',
+            },
           }}
         >
           <Mui.Toolbar />
@@ -129,9 +131,7 @@ export default function Home() {
           <Mui.Toolbar />
           {currentTab === 0 && <Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" />}
           {currentTab === 1 && <Mui.Drive userInfo={userInfo} width="100%" />}
-          {currentTab === 2 && <Mui.Paper>
-            2: Music
-          </Mui.Paper>}
+          {currentTab === 2 && <Mui.Music userInfo={userInfo} width="100%" />}
         </Mui.Box>
       </Mui.Box>
     </ThemeProvider>

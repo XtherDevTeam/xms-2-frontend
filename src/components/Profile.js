@@ -5,7 +5,6 @@ import * as Api from '../Api'
 import PropTypes from 'prop-types'
 
 import ItemUploadDialog from './ItemUploadDialog'
-import { DataArray } from '@mui/icons-material'
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -24,7 +23,7 @@ function CustomTabPanel(props) {
         </Mui.Box>
       )}
     </div>
-  );
+  )
 }
 
 CustomTabPanel.propTypes = {
@@ -397,7 +396,8 @@ export default function Profile(props) {
   }
 
   React.useEffect(() => {
-    updateSharedLinksList()
+    if (props.userInfo.id !== undefined)
+      updateSharedLinksList()
   }, [props])
 
   return (

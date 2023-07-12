@@ -55,21 +55,46 @@ import { styled } from "@mui/system"
 
 import Profile from './components/Profile'
 import Drive from './components/Drive'
+import Music from './components/Music'
 
 import FileUpload from 'react-mui-fileuploader'
 
 import { createTheme } from '@mui/material/styles'
 
-const Background = styled("div")({
+// backgroundColor: "rgba(255, 255, 255, 0.24)",
+//               backdropFilter: "blur(15px)",
+
+const Background = (props) => (<div style={{
   position: "absolute",
   width: "100%",
   height: "100%",
-  backgroundImage: `url(${imgBackground3})`,
+  backgroundImage: `url(${props.img})`,
   backgroundPosition: "center",
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   zIndex: -2000,
-})
+}}>{props.children}</div>)
+
+const BackgroundColor = (props) => (<div style={{
+  position: "absolute",
+  width: "100%",
+  height: "100%",
+  backgroundColor: props.color,
+  backgroundPosition: "center",
+  backgroundSize: "cover",
+  backgroundRepeat: "no-repeat",
+  zIndex: -2000,
+}}>{props.children}</div>)
+
+const BlurBackground = (props) => (<Background img={props.img}>
+  <div style={{
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: `${props.backgroundColor}`,
+    backdropFilter: `blur(${props.filterArg})`
+  }}></div>
+</Background>)
 
 const theme = createTheme({
   palette: {
@@ -98,5 +123,6 @@ export {
   Profile, Tab, Tabs, Drive, Breadcrumbs, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Backdrop, ButtonGroup, theme, Dialog,
   DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
-  imgBackground3, ListItemAvatar
+  imgBackground3, ListItemAvatar, Music, imgBackground1, BlurBackground,
+  BackgroundColor
 }
