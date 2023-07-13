@@ -79,6 +79,19 @@ function getSongArtworkPath(sid) {
   return `/api/xms/v1/music/song/${sid}/artwork`
 }
 
+function musicPlaylistCreate(name, description) {
+  return axios.post(`/api/xms/v1/music/playlist/create`, {
+    name: name,
+    description: description
+  })
+}
+
+function musicPlaylistDelete(id) {
+  return axios.post(`/api/xms/v1/music/playlist/delete`, {
+    id: id
+  })
+}
+
 function userShareLinks(uid) {
   return axios.get(`/api/xms/v1/user/${uid}/sharelinks`)
 }
@@ -155,5 +168,6 @@ export {
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
   dirname, userShareLinks, userAvatarUpdate, userHeadImgUpdate, userSloganUpdate,
   userUsernameUpdate, shareLinkCreate, userPasswordUpdate, basename, getShareLinkPath,
-  shareLinkDelete, driveCopy, getSongArtworkPath, getPlaylistArtworkPath, userPlaylists
+  shareLinkDelete, driveCopy, getSongArtworkPath, getPlaylistArtworkPath, userPlaylists,
+  musicPlaylistCreate, musicPlaylistDelete
 }
