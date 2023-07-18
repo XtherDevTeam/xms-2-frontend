@@ -50,6 +50,8 @@ import CardActionArea from '@mui/material/CardActionArea'
 import Icon from '@mui/material/Icon'
 import Stack from '@mui/material/Stack'
 import Slider from '@mui/material/Slider'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -85,6 +87,8 @@ const Background = (props) => (<div style={{
 
 const BackgroundColor = (props) => (<div style={{
   position: "absolute",
+  top: '0px',
+  left: '0px',
   width: "100%",
   height: "100%",
   backgroundColor: props.color,
@@ -95,29 +99,50 @@ const BackgroundColor = (props) => (<div style={{
   transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
 }}>{props.children}</div>)
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      light: '#ea4c03',
-      main: '#f36903',
-      dark: '#f97902',
-      contrastText: '#fff',
+let theme = () => {
+  if (window.localStorage.getItem('themeMode') === null) {
+    setThemeMode('light')
+    return
+  }
+
+  document.getElementsByTagName('body')[0].style.backgroundColor = window.localStorage.getItem('themeMode') === 'light' ? '#fafafa' : '#303030'
+  return createTheme({
+    palette: {
+      mode: window.localStorage.getItem('themeMode'),
+      primary: {
+        light: '#ea4c03',
+        main: '#f36903',
+        dark: '#f97902',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '#1a3db3',
+        main: '#165dd2',
+        dark: '#116fe5',
+        contrastText: '#000',
+      },
     },
-    secondary: {
-      light: '#1a3db3',
-      main: '#165dd2',
-      dark: '#116fe5',
-      contrastText: '#000',
-    },
-  },
-})
+  })
+}
+
+
+let setThemeMode = (mode) => {
+  let event = new Event('themeModeChange')
+  window.localStorage.setItem('themeMode', mode)
+  event.newValue = mode
+  window.dispatchEvent(event)
+}
+
+let listenToThemeModeChange = (callback) => {
+  window.addEventListener('themeModeChange', (e) => {
+    callback(e.newValue)
+  })
+}
 
 
 function IconText(props) {
   return (
-    <Stack direction="row" alignItems="center" gap={1}>
-      {props.children}
-    </Stack>
+    <Stack direction="row" alignItems="center" gap={1} {...props}></Stack>
   )
 }
 
@@ -131,6 +156,7 @@ export {
   Profile, Tab, Tabs, Drive, Breadcrumbs, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Backdrop, ButtonGroup, theme, Dialog,
   DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
-  imgBackground3, ListItemAvatar, Music, imgBackground1,
-  BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider
+  imgBackground3, ListItemAvatar, Music, imgBackground1, Menu, MenuItem,
+  BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider,
+  setThemeMode, listenToThemeModeChange
 }

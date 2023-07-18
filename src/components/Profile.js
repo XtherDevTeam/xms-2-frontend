@@ -330,30 +330,6 @@ export default function Profile(props) {
     return (
       <Mui.List>
         <Mui.ListItem
-          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserAvatarOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
-        >
-          <Mui.ListItemAvatar>
-            <Mui.Avatar>
-              <Mui.Icons.AccountCircle />
-            </Mui.Avatar>
-          </Mui.ListItemAvatar>
-          <Mui.ListItemText
-            primary="User Avatar"
-          />
-        </Mui.ListItem>
-        <Mui.ListItem
-          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserHeadImgOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
-        >
-          <Mui.ListItemAvatar>
-            <Mui.Avatar>
-              <Mui.Icons.Photo />
-            </Mui.Avatar>
-          </Mui.ListItemAvatar>
-          <Mui.ListItemText
-            primary="Head Image"
-          />
-        </Mui.ListItem>
-        <Mui.ListItem
           secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUsernameOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
         >
           <Mui.ListItemAvatar>
@@ -377,6 +353,30 @@ export default function Profile(props) {
           <Mui.ListItemText
             primary="Slogan"
             secondary={`${newUserInfo.slogan}`}
+          />
+        </Mui.ListItem>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserAvatarOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.AccountCircle />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary="User Avatar"
+          />
+        </Mui.ListItem>
+        <Mui.ListItem
+          secondaryAction={<Mui.IconButton edge="end" aria-label="edit" onClick={handleChangeUserHeadImgOnClick}><Mui.Icons.Edit /></Mui.IconButton>}
+        >
+          <Mui.ListItemAvatar>
+            <Mui.Avatar>
+              <Mui.Icons.Photo />
+            </Mui.Avatar>
+          </Mui.ListItemAvatar>
+          <Mui.ListItemText
+            primary="Head Image"
           />
         </Mui.ListItem>
         <Mui.ListItem

@@ -8,9 +8,13 @@ import { useNavigate, useHref } from "react-router-dom"
 
 export default function NotMatch() {
   const navigate = useNavigate()
+  let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
+  Mui.listenToThemeModeChange((v) => {
+    setCurrentTheme(Mui.theme())
+  })
 
   return (
-    <ThemeProvider theme={Mui.theme}>
+    <ThemeProvider theme={currentTheme}>
       <Mui.Background img={Mui.imgBackground3} />
       <Mui.Card sx={{ maxWidth: 500, top: "50%", left: "50%", transform: "translate(-50%, -50%)", position: "absolute" }}>
         <Mui.CardMedia

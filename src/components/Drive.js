@@ -41,8 +41,13 @@ function defaultPlaylistSelectDialogState() {
   return { onOk: (id) => { }, onCancel: () => { }, message: "", title: "", state: false }
 }
 
+function defaultFilesContextMenuState() {
+  return { state: false, row: {}, index: 0, posX: 0, posY: 0, targetEl: null }
+}
+
 
 export default function Drive(props) {
+  let [filesContextMenuState, setFilesContextMenuState] = React.useState(defaultFilesContextMenuState())
   let [confirmDialogState, setConfirmDialogState] = React.useState(defaultConfirmDialogState())
   let [itemRenameDialogState, setItemRenameDialogState] = React.useState(defaultItemRenameDialogState())
   let [pathInputDialogState, setPathInputDialogState] = React.useState(defaultPathInputDialogState())
@@ -160,6 +165,95 @@ export default function Drive(props) {
           </div>
         </Mui.Box>
       </Mui.Dialog>
+    )
+  }
+
+  function FilesContextMenu() {
+    return (
+      <Mui.Menu
+        id="basic-menu"
+        open={filesContextMenuState.state}
+        onClose={() => {
+          setFilesContextMenuState(defaultFilesContextMenuState())
+        }}
+        anchorEl={filesContextMenuState.targetEl}
+        MenuListProps={{
+
+        }}
+      >
+        <Mui.MenuItem onClick={() => {
+          handleActionsClick(filesContextMenuState.index, "copy")
+          setFilesContextMenuState(defaultFilesContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.FileCopy fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Copy</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          handleActionsClick(filesContextMenuState.index, "move")
+          setFilesContextMenuState(defaultFilesContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.DriveFileMove fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Move</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          handleActionsClick(filesContextMenuState.index, "rename")
+          setFilesContextMenuState(defaultFilesContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.DriveFileRenameOutline fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Rename</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          setConfirmDialogState({
+            title: "Warning",
+            message: "Are you really going to delete this item? This operation is IRREVERTIBLE!",
+            onOk: () => { handleActionsClick(filesContextMenuState.index, "delete"); setConfirmDialogState(defaultConfirmDialogState()) },
+            onCancel: () => { setConfirmDialogState(defaultConfirmDialogState()) }, state: true
+          })
+          setFilesContextMenuState(defaultFilesContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.Delete fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Delete</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          handleShareOnClick(filesContextMenuState.index)
+          setFilesContextMenuState(defaultFilesContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.Share fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Share</Mui.ListItemText>
+        </Mui.MenuItem>
+        {filesContextMenuState.row.type == "file" &&
+          <Mui.MenuItem onClick={() => {
+            handleActionsClick(filesContextMenuState.index, "download")
+            setFilesContextMenuState(defaultFilesContextMenuState())
+          }}>
+            <Mui.ListItemIcon>
+              <Mui.Icons.CloudDownload fontSize='small' />
+            </Mui.ListItemIcon>
+            <Mui.ListItemText>Download</Mui.ListItemText>
+          </Mui.MenuItem>
+        }
+        {(filesContextMenuState.row.type == "file" && filesContextMenuState.row.mime.startsWith("audio/")) &&
+          <Mui.MenuItem onClick={() => {
+            handleAddToPlaylistOnClick(filesContextMenuState.index)
+            setFilesContextMenuState(defaultFilesContextMenuState())
+          }}>
+            <Mui.ListItemIcon>
+              <Mui.Icons.PlaylistAdd fontSize='small' />
+            </Mui.ListItemIcon>
+            <Mui.ListItemText>Add to playlist</Mui.ListItemText>
+          </Mui.MenuItem>
+        }
+      </Mui.Menu>
     )
   }
 
@@ -321,41 +415,11 @@ export default function Drive(props) {
         <Mui.TableCell><p style={{ width: "100px", overflow: "hidden" }}>{row.mime}</p></Mui.TableCell>
         <Mui.TableCell>{row.lastModified}</Mui.TableCell>
         <Mui.TableCell>
-          <Mui.IconButton aria-label="Copy" onClick={() => { handleActionsClick(index, "copy") }}>
-            <Mui.Icons.FileCopy />
-          </Mui.IconButton>
-          <Mui.IconButton aria-label="Move" onClick={() => { handleActionsClick(index, "move") }}>
-            <Mui.Icons.DriveFileMove />
-          </Mui.IconButton>
-          <Mui.IconButton aria-label="rename" onClick={() => { handleActionsClick(index, "rename") }}>
-            <Mui.Icons.DriveFileRenameOutline />
-          </Mui.IconButton>
-          <Mui.IconButton aria-label="delete" onClick={() => {
-            setConfirmDialogState({
-              title: "Warning",
-              message: "Are you really going to delete this item? This operation is IRREVERTIBLE!",
-              onOk: () => { handleActionsClick(index, "delete"); setConfirmDialogState(defaultConfirmDialogState()) },
-              onCancel: () => { setConfirmDialogState(defaultConfirmDialogState()) }, state: true
-            })
-          }}>
-            <Mui.Icons.Delete />
-          </Mui.IconButton>
-          <Mui.IconButton aria-label="share" onClick={() => {
-            handleShareOnClick(index)
-          }}>
-            <Mui.Icons.Share />
-          </Mui.IconButton>
-          {row.type == "file" &&
-            <Mui.IconButton aria-label="download" onClick={() => { handleActionsClick(index, "download") }}>
-              <Mui.Icons.CloudDownload />
-            </Mui.IconButton>}
-          {(row.type == "file" && row.mime.startsWith("audio/")) &&
-            <Mui.IconButton aria-label="add to playlist" onClick={() => {
-              handleAddToPlaylistOnClick(index)
-            }}>
-              <Mui.Icons.PlaylistAdd />
-            </Mui.IconButton>
-          }
+          <Mui.IconButton onClick={(event) => {
+            console.log("more: ", event.clientX, event.clientY)
+            setFilesContextMenuState({ state: true, row: row, index: index, posX: event.clientX, posY: event.clientY, targetEl: event.currentTarget })
+            event.preventDefault()
+          }}><Mui.Icons.MoreVert /></Mui.IconButton>
         </Mui.TableCell>
       </Mui.TableRow>
     )))
@@ -404,6 +468,7 @@ export default function Drive(props) {
   return (
     <Mui.Card sx={{ width: props.width }}>
       <Mui.CardContent>
+        <FilesContextMenu></FilesContextMenu>
         <PlaylistSelectDialog title={playlistSelectDialogState.title} message={playlistSelectDialogState.message} state={playlistSelectDialogState.state} onOk={playlistSelectDialogState.onOk} onCancel={playlistSelectDialogState.onCancel} />
         <ItemUploadDialog title={itemUploadDialogState.title} message={itemUploadDialogState.message} allowMultiFile={itemUploadDialogState.allowMultiFile} acceptedType={itemUploadDialogState.acceptedType} formKey={itemUploadDialogState.formKey} state={itemUploadDialogState.state} onUpload={itemUploadDialogState.onUpload} onOk={itemUploadDialogState.onOk} onCancel={itemUploadDialogState.onCancel} />
         <CreateFolderDialog path={createFolderDialogState.path} state={createFolderDialogState.state} onOk={createFolderDialogState.onOk} onCancel={createFolderDialogState.onCancel} />
@@ -477,7 +542,7 @@ export default function Drive(props) {
                 <Mui.TableCell style={{ width: "40%", overflow: "hidden" }}>Name</Mui.TableCell>
                 <Mui.TableCell>MIME</Mui.TableCell>
                 <Mui.TableCell>Last modified</Mui.TableCell>
-                <Mui.TableCell>Actions</Mui.TableCell>
+                <Mui.TableCell width="32px"></Mui.TableCell>
               </Mui.TableRow>
             </Mui.TableHead>
             <Mui.TableBody>

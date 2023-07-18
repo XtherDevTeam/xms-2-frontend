@@ -199,6 +199,13 @@ function getMusicPlaylistSongsFileSrc(playlistId, songId) {
   return `/api/xms/v1/music/playlist/${playlistId}/songs/${songId}/file`
 }
 
+function musicPlaylistEdit(playlistId, name, description) {
+  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/edit`, {
+    name: name,
+    description: description
+  })
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
@@ -207,5 +214,5 @@ export {
   shareLinkDelete, driveCopy, getSongArtworkPath, getPlaylistArtworkPath, userPlaylists,
   musicPlaylistCreate, musicPlaylistDelete, musicPlaylistSongsInsert, musicPlaylistSongs,
   musicPlaylistInfo, musicPlaylistSongsSwap, musicPlaylistSongsDelete, getRndInteger,
-  getMusicPlaylistSongsFileSrc, getPlayTimeStr
+  getMusicPlaylistSongsFileSrc, getPlayTimeStr, musicPlaylistEdit
 }

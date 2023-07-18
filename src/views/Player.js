@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as Mui from '../Components'
 import BlurBackground from '../components/BlurBackground'
 import * as Api from '../Api.js'
+import './Player.css'
 
 import * as qs from 'qs'
 import { ThemeProvider, createTheme } from '@mui/material'
@@ -9,16 +10,12 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
 export default function Player(props) {
+  let [editPlaylistDialogStatus, setEditPlaylistDialogStatus] = React.useState(false)
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
   let [searchParams, setSearchParams] = React.useState({ playlistId: 0 })
   let [currentArtwork, setCurrentArtwork] = React.useState("")
   let [playlistSongList, setPlaylistSongList] = React.useState([])
-  let [forceImgReRendering, setForceImgReRendering] = React.useState(0)
-
-  let reRenderImg = () => {
-    setForceImgReRendering(forceImgReRendering + 1)
-  }
 
   let [playlistInfo, setPlaylistInfo] = React.useState({
     name: '丁真珍珠歌曲精选',
@@ -65,12 +62,8 @@ export default function Player(props) {
   let runTimer = () => {
     clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
-      if (audioRef.current.ended) {
-        prepareForPlaying(false, selectNextSong)
-      } else {
-        setCurrentProgress(audioRef.current.currentTime)
-        updateCurrentPlayStatus()
-      }
+      setCurrentProgress(audioRef.current.currentTime)
+      updateCurrentPlayStatus()
     }, 500)
   }
 
@@ -179,11 +172,13 @@ export default function Player(props) {
   }, [props])
 
   React.useEffect(() => {
+    if (playlistSongList.length === 0) {
+      return
+    }
     if (currentTrackIndex === -1) {
       console.log(playlistSongList)
       prepareForPlaying(false, selectNextSong)
     }
-    reRenderImg()
   }, [playlistSongList])
 
   React.useEffect(() => {
@@ -214,6 +209,7 @@ export default function Player(props) {
     }
     audioRef.current.onended = () => {
       setCurrentPlayInfoStatus(false)
+      prepareForPlaying(false, selectNextSong)
     }
     audioRef.current.onplay = () => {
       setCurrentPlayInfoStatus(true)
@@ -231,13 +227,87 @@ export default function Player(props) {
     }
   }, [])
 
+  let EditPlaylistDialog = () => {
+    return (
+      <Mui.Dialog open={editPlaylistDialogStatus} onClose={() => {
+        setEditPlaylistDialogStatus(false)
+      }}>
+        <Mui.Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={(event) => {
+            event.preventDefault()
+            let formData = new FormData(event.currentTarget)
+            let name = formData.get("name")
+            let description = formData.get("description")
+            if (name.length === 0 || description.length === 0) {
+              setAlertDetail({ "type": "error", "title": "Error", "message": `Playlist name or description is empty!` })
+              setAlertOpen(true)
+            } else {
+              Api.musicPlaylistEdit(searchParams.playlistId, name, description).then((data) => {
+                if (data.data.ok) {
+                  refreshPlaylistInfo(searchParams.playlistId)
+                } else {
+                  setAlertDetail({ "type": "error", "title": "Error", "message": `Error editing playlist: ${data.data.data}` })
+                  setAlertOpen(true)
+                }
+                setEditPlaylistDialogStatus(false)
+              }).catch((err) => {
+                setAlertDetail({ "type": "error", "title": "Error", "message": `Error editing playlist: NetworkError` })
+                setAlertOpen(true)
+                setEditPlaylistDialogStatus(false)
+              })
+            }
+          }}
+        >
+          <Mui.DialogTitle>Edit playlist</Mui.DialogTitle>
+          <Mui.DialogContent>
+            <Mui.Typography variant='body2'>
+              Change the playlist name and description
+            </Mui.Typography>
+            <Mui.TextField
+              margin="normal"
+              variant='filled'
+              required
+              fullWidth
+              id="playlist-name-input"
+              label="Playlist name"
+              name="name"
+              defaultValue={playlistInfo.name}
+              autoFocus
+            />
+            <Mui.TextField
+              margin="normal"
+              variant='filled'
+              required
+              fullWidth
+              id="playlist-description-input"
+              label="Playlist description"
+              name="description"
+              multiline
+              maxRows={4}
+              defaultValue={playlistInfo.description}
+              autoFocus
+            />
+          </Mui.DialogContent>
+          <Mui.DialogActions>
+            <Mui.Button onClick={() => (setEditPlaylistDialogStatus(false))}>Cancel</Mui.Button>
+            <Mui.Button type='submit'>OK</Mui.Button>
+          </Mui.DialogActions>
+        </Mui.Box>
+      </Mui.Dialog>
+    )
+  }
+
   return (
     <ThemeProvider theme={createTheme({
       palette: {
         mode: 'dark',
       }
     })}>
-      <BlurBackground img={`${currentArtwork}?v=${forceImgReRendering}`} filterArg="50px" backgroundColor="rgba(0, 0, 0, 0.40)"></BlurBackground>
+      <BlurBackground loading="lazy" img={`${currentArtwork}`} filterArg="50px" backgroundColor="rgba(0, 0, 0, 0.40)"></BlurBackground>
+      <EditPlaylistDialog></EditPlaylistDialog>
       <Mui.Container style={{ height: '100vh', overflowY: 'hidden' }}>
         <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
           <Mui.Alert severity={alertDetail.type} action={
@@ -258,19 +328,21 @@ export default function Player(props) {
           }}
           key="volume-change-bar"
         >
-          <Mui.Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
-            <Mui.Icons.VolumeDown />
-            <Mui.Slider sx={{width: '30vw'}} aria-label="Volume" min={0} max={100} value={currentVolume} onChange={(e, v) => {
-              setCurrentVolume(v)
-            }} />
-            <Mui.Icons.VolumeUp />
-          </Mui.Stack>
+          <Mui.Paper sx={{width: '100%', padding: '10px'}}>
+            <Mui.Stack direction="row" alignItems="center" gap={1} spacing={2}>
+              <Mui.Typography color='text.primary' component={"div"}><Mui.Icons.VolumeDown /></Mui.Typography>
+              <Mui.Slider style={{ width: '20vw' }} size="small" aria-label="Volume" min={0} max={100} value={currentVolume} onChange={(e, v) => {
+                setCurrentVolume(v)
+              }} />
+              <Mui.Typography color='text.primary' component={"div"}><Mui.Icons.VolumeUp /></Mui.Typography>
+            </Mui.Stack>
+          </Mui.Paper>
         </Mui.Snackbar>
         <Mui.Grid container style={{ width: "100%" }} whiteSpace={4}>
           <Mui.Grid item xs={12} sm={6} md={4}>
             <Mui.Container style={{ height: "100vh", "display": "flex" }}>
               <div id="player-box" style={{ margin: "auto", width: "100%" }}>
-                <img src={`${currentArtwork}?v=${forceImgReRendering}`} style={{ display: "block", borderRadius: "25px", width: "80%", height: "auto" }}></img>
+                <img loading="lazy" src={`${currentArtwork}`} style={{ display: "block", borderRadius: "25px", width: "80%", height: "auto" }}></img>
                 <Mui.Typography variant='h3' component={"div"} color='text.primary' style={{
                   marginTop: "40px",
                   width: "100%",
@@ -351,7 +423,7 @@ export default function Player(props) {
             </Mui.Container>
           </Mui.Grid>
           <Mui.Grid item xs={12} sm={6} md={8}>
-            <Mui.Paper sx={{
+            <Mui.Paper className='scrollhost' elevation={5} sx={{
               height: "calc(90vh - 16px - 20px)",
               borderRadius: '20px',
               padding: "40px 40px 20px 40px",
@@ -359,6 +431,7 @@ export default function Player(props) {
               backgroundColor: 'rgba(0, 0, 0, .30)',
               overflowY: 'scroll',
             }}>
+              <Mui.IconButton sx={{ float: 'right' }} onClick={() => { setEditPlaylistDialogStatus(true) }}><Mui.Icons.Edit /></Mui.IconButton>
               <Mui.Typography color='text.primary' variant='h4'>
                 {playlistInfo.name}
               </Mui.Typography>
@@ -379,8 +452,6 @@ export default function Player(props) {
                 if (result.destination == null) {
                   return null
                 }
-                // console.log(result.source, ' ', result.destination)
-                // console.log(playlistSongList[result.source.index], playlistSongList[result.destination.index])
                 [playlistSongList[result.source.index], playlistSongList[result.destination.index]] = [playlistSongList[result.destination.index], playlistSongList[result.source.index]]
                 Api.musicPlaylistSongsSwap(
                   searchParams.playlistId,
@@ -434,7 +505,7 @@ export default function Player(props) {
                                 }}>
                                   <Mui.ListItemIcon>
                                     {/* Work around: 解决img缓存问题 */}
-                                    <Mui.Avatar variant="rounded" alt="artwork" src={`${Api.getSongArtworkPath(row.id)}?v=${forceImgReRendering}`} />
+                                    <Mui.Avatar imgProps={{ loading: 'lazy' }} variant="rounded" alt="artwork" src={`${Api.getSongArtworkPath(row.id)}`} />
                                   </Mui.ListItemIcon>
                                   <Mui.ListItemText primary={row.info.title} secondary={row.info.artist} />
                                 </Mui.ListItemButton>

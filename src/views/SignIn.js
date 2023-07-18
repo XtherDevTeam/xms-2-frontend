@@ -22,6 +22,10 @@ export default function SignInSide() {
 
   const [alertOpen, setAlertOpen] = React.useState(false)
   const [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
+  let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
+  Mui.listenToThemeModeChange((v) => {
+    setCurrentTheme(Mui.theme())
+  })
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -45,7 +49,7 @@ export default function SignInSide() {
   };
 
   return (
-    <ThemeProvider theme={Mui.theme}>
+    <ThemeProvider theme={currentTheme}>
       <Mui.Grid container component="main" sx={{ height: '100vh' }}>
         <Mui.CssBaseline />
         <Mui.Grid
@@ -63,6 +67,12 @@ export default function SignInSide() {
           }}
         />
         <Mui.Grid item xs={12} sm={6} md={3} component={Mui.Paper} elevation={6} square>
+          <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
+            Mui.setThemeMode(currentTheme.palette.mode === 'dark' ? 'light' : 'dark')
+          }}>
+            {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
+          </Mui.IconButton>
+
           <Mui.Box
             sx={{
               my: 8,

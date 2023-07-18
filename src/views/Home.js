@@ -17,6 +17,11 @@ export default function Home() {
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
 
+  let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
+  Mui.listenToThemeModeChange((v) => {
+    setCurrentTheme(Mui.theme())
+  })
+
   let handleSignOutBtnClick = () => {
     Api.signOut().then((data) => {
       if (data.data.ok) {
@@ -62,7 +67,7 @@ export default function Home() {
 
 
   return (
-    <ThemeProvider theme={Mui.theme}>
+    <ThemeProvider theme={currentTheme}>
       <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
         <Mui.Alert severity={alertDetail.type} action={
           <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >
@@ -74,14 +79,22 @@ export default function Home() {
         </Mui.Alert>
       </Mui.Snackbar>
       <Mui.Box sx={{ display: 'flex', flexGrow: 1 }}>
-        <Mui.BackgroundColor color={Mui.theme.palette.action.hover}></Mui.BackgroundColor>
         <Mui.CssBaseline />
         <Mui.AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Mui.Toolbar>
             <Mui.Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
               XmediaCenter2
             </Mui.Typography>
-            <Mui.Button color="inherit" onClick={() => { handleSignOutBtnClick() }}>Sign out</Mui.Button>
+            <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
+              Mui.setThemeMode(currentTheme.palette.mode === 'dark' ? 'light' : 'dark')
+            }}>
+              {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 color='white' /> : <Mui.Icons.Brightness4 color='white' />}
+            </Mui.IconButton>
+            <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
+              handleSignOutBtnClick()
+            }}>
+              <Mui.Icons.Logout color='white' />
+            </Mui.IconButton>
           </Mui.Toolbar>
         </Mui.AppBar>
         <Mui.Drawer
@@ -91,6 +104,7 @@ export default function Home() {
             flexShrink: 0,
             [`& .MuiDrawer-paper`]: {
               width: "20%", boxSizing: 'border-box',
+              backgroundColor: currentTheme.palette.mode === 'light' ? '#ffffff' : '#424242'
             },
           }}
         >
@@ -127,7 +141,9 @@ export default function Home() {
             </Mui.List>
           </Mui.Box>
         </Mui.Drawer>
-        <Mui.Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Mui.Box component="main" sx={{
+          flexGrow: 1, p: 3,
+        }}>
           <Mui.Toolbar />
           {currentTab === 0 && <Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" />}
           {currentTab === 1 && <Mui.Drive userInfo={userInfo} width="100%" />}

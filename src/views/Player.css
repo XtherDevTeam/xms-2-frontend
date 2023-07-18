@@ -1,5 +1,13 @@
-/* #player-container > * {
-    background-color: unset;
-    background: unset;
-    background-image: unset;
-} */
+.scrollhost::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollhost ::-moz-scrollbar {
+    display: none;
+
+}
+
+.scrollhost {
+    -ms-overflow-style: none;
+    scrollbar-color: transparent transparent;
+}
