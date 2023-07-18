@@ -47,6 +47,9 @@ import DialogTitle from '@mui/material/DialogTitle'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Fab from '@mui/material/Fab'
 import CardActionArea from '@mui/material/CardActionArea'
+import Icon from '@mui/material/Icon'
+import Stack from '@mui/material/Stack'
+import Slider from '@mui/material/Slider'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -63,6 +66,8 @@ import FileUpload from 'react-mui-fileuploader'
 
 import { createTheme } from '@mui/material/styles'
 
+import * as React from 'react'
+
 // backgroundColor: "rgba(255, 255, 255, 0.24)",
 //               backdropFilter: "blur(15px)",
 
@@ -75,6 +80,7 @@ const Background = (props) => (<div style={{
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   zIndex: -2000,
+  transition: 'background-image 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
 }}>{props.children}</div>)
 
 const BackgroundColor = (props) => (<div style={{
@@ -86,17 +92,8 @@ const BackgroundColor = (props) => (<div style={{
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   zIndex: -2000,
+  transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
 }}>{props.children}</div>)
-
-const BlurBackground = (props) => (<Background img={props.img}>
-  <div style={{
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    backgroundColor: `${props.backgroundColor}`,
-    backdropFilter: `blur(${props.filterArg})`
-  }}></div>
-</Background>)
 
 const theme = createTheme({
   palette: {
@@ -116,6 +113,15 @@ const theme = createTheme({
 })
 
 
+function IconText(props) {
+  return (
+    <Stack direction="row" alignItems="center" gap={1}>
+      {props.children}
+    </Stack>
+  )
+}
+
+
 export {
   Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox,
   Link, Paper, Box, Grid, LockOutlinedIcon, Typography, Snackbar, Alert,
@@ -125,6 +131,6 @@ export {
   Profile, Tab, Tabs, Drive, Breadcrumbs, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Backdrop, ButtonGroup, theme, Dialog,
   DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
-  imgBackground3, ListItemAvatar, Music, imgBackground1, BlurBackground,
-  BackgroundColor, Fab, CardActionArea
+  imgBackground3, ListItemAvatar, Music, imgBackground1,
+  BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider
 }

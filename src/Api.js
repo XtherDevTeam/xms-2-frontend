@@ -4,6 +4,16 @@ function makeResult(ok, data) {
   return { "ok": ok, "data": data }
 }
 
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min) ) + min;
+}
+
+function getPlayTimeStr(time) {
+  var now_minutes = Math.trunc(Math.trunc(time) / 60)
+  var now_seconds = Math.trunc(Math.trunc(time) % 60)
+  return `${now_minutes}:${now_seconds < 10 ? '0' : ''}${now_seconds}`
+}
+
 function dirname(pathStr) {
   if (pathStr === "/") { return "" }
   if (pathStr.endsWith('/')) { pathStr = pathStr.substring(0, pathStr.length - 1) }
@@ -92,6 +102,12 @@ function musicPlaylistDelete(id) {
   })
 }
 
+function musicPlaylistSongsDelete(playlistId, sid) {
+  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/delete`, {
+    songId: sid
+  })
+}
+
 function userShareLinks(uid) {
   return axios.get(`/api/xms/v1/user/${uid}/sharelinks`)
 }
@@ -163,11 +179,33 @@ function getShareLinkPath(location, linkId) {
   return `${location.protocol}//${location.host}/sharelink/${linkId}`
 }
 
+function musicPlaylistSongsInsert(playlistId, path) {
+  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/songs/insert`, {songPath: path})
+}
+
+function musicPlaylistSongs(playlistId) {
+  return axios.get(`/api/xms/v1/music/playlist/${playlistId}/songs`)
+}
+
+function musicPlaylistInfo(playlistId) {
+  return axios.get(`/api/xms/v1/music/playlist/${playlistId}/info`)
+}
+
+function musicPlaylistSongsSwap(playlistId, src, dest) {
+  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/songs/swap/${src}/${dest}`)
+}
+
+function getMusicPlaylistSongsFileSrc(playlistId, songId) {
+  return `/api/xms/v1/music/playlist/${playlistId}/songs/${songId}/file`
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
   dirname, userShareLinks, userAvatarUpdate, userHeadImgUpdate, userSloganUpdate,
   userUsernameUpdate, shareLinkCreate, userPasswordUpdate, basename, getShareLinkPath,
   shareLinkDelete, driveCopy, getSongArtworkPath, getPlaylistArtworkPath, userPlaylists,
-  musicPlaylistCreate, musicPlaylistDelete
+  musicPlaylistCreate, musicPlaylistDelete, musicPlaylistSongsInsert, musicPlaylistSongs,
+  musicPlaylistInfo, musicPlaylistSongsSwap, musicPlaylistSongsDelete, getRndInteger,
+  getMusicPlaylistSongsFileSrc, getPlayTimeStr
 }

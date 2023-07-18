@@ -3,8 +3,6 @@ import * as Mui from '../Components'
 
 import * as Api from '../Api'
 
-
-
 export default function PathInputDialog(props) {
   let [inputValue, setInputValue] = React.useState('/')
   // use this to force refresh the rendered component

@@ -64,7 +64,9 @@ export default function Music(props) {
           {playlistsData.map((row, index) => (
             <Mui.Grid item xs={6} sm={4} md={3}>
               <Mui.Card>
-                <Mui.CardActionArea>
+                <Mui.CardActionArea onClick={() => {
+                  window.open(`/player?playlistId=${row.id}`)
+                }}>
                   <Mui.CardMedia
                     component="img"
                     image={Api.getPlaylistArtworkPath(row.id)}

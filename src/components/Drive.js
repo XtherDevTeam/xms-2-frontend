@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as Mui from '../Components'
 import PathInputDialog from './PathInputDialog'
 import ItemUploadDialog from './ItemUploadDialog'
+import PlaylistSelectDialog from './PlaylistSelectDialog'
 
 import * as Api from '../Api'
 import axios from 'axios'
@@ -36,12 +37,18 @@ function defaultItemUploadDialogState() {
   return { onUpload: (data) => { }, message: "", title: "", acceptedType: "", allowMultiFile: false, onOk: () => { }, onCancel: () => { }, "state": false, formKey: "" }
 }
 
+function defaultPlaylistSelectDialogState() {
+  return { onOk: (id) => { }, onCancel: () => { }, message: "", title: "", state: false }
+}
+
+
 export default function Drive(props) {
   let [confirmDialogState, setConfirmDialogState] = React.useState(defaultConfirmDialogState())
   let [itemRenameDialogState, setItemRenameDialogState] = React.useState(defaultItemRenameDialogState())
   let [pathInputDialogState, setPathInputDialogState] = React.useState(defaultPathInputDialogState())
   let [createFolderDialogState, setCreateFolderDialogState] = React.useState(defaultCreateFolderDialogState())
   let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
+  let [playlistSelectDialogState, setPlaylistSelectDialogState] = React.useState(defaultPlaylistSelectDialogState())
 
   let [rawPreviewComponent, setRawPreviewComponent] = React.useState(<></>)
   let [previewOpen, setPreviewOpen] = React.useState(false)
@@ -258,7 +265,7 @@ export default function Drive(props) {
       if (data.data.ok) {
         setConfirmDialogState({
           title: "Share link created",
-          message: <><span style={{fontWeight: "bold"}}>Your link</span>: {Api.getShareLinkPath(window.location, data.data.data)}</>,
+          message: <><span style={{ fontWeight: "bold" }}>Your link</span>: {Api.getShareLinkPath(window.location, data.data.data)}</>,
           onOk: () => { setConfirmDialogState(defaultConfirmDialogState()) },
           onCancel: () => { setConfirmDialogState(defaultConfirmDialogState()) }, state: true
         })
@@ -269,6 +276,31 @@ export default function Drive(props) {
     }).catch((err) => {
       setAlertDetail({ "type": "error", "title": "Error", "message": `Error creating share link: NetworkError` })
       setAlertOpen(true)
+    })
+  }
+
+  let handleAddToPlaylistOnClick = (index) => {
+    setPlaylistSelectDialogState({
+      onOk: (id) => {
+        Api.musicPlaylistSongsInsert(id, driveInfo.info.list[index].path).then((data) => {
+          if (data.data.ok) {
+            setPlaylistSelectDialogState(defaultPlaylistSelectDialogState())
+            setAlertDetail({ "type": "success", "title": "Success", "message": `Add ${driveInfo.info.list[index].filename} into playlist successfully!` })
+            setAlertOpen(true)
+          } else {
+            setPlaylistSelectDialogState(defaultPlaylistSelectDialogState())
+            setAlertDetail({ "type": "error", "title": "Error", "message": `Error adding music into playlist: ${data.data.data}` })
+            setAlertOpen(true)
+          }
+        }).catch((err) => {
+          setAlertDetail({ "type": "error", "title": "Error", "message": `Error adding music into playlist: NetworkError` })
+          setAlertOpen(true)
+        })
+      },
+      onCancel: () => { setPlaylistSelectDialogState(defaultPlaylistSelectDialogState()) },
+      title: "Add to playlist",
+      message: "Select which playlist that you want to add the song into",
+      state: true
     })
   }
 
@@ -309,7 +341,6 @@ export default function Drive(props) {
             <Mui.Icons.Delete />
           </Mui.IconButton>
           <Mui.IconButton aria-label="share" onClick={() => {
-            console.log("wdnmd?")
             handleShareOnClick(index)
           }}>
             <Mui.Icons.Share />
@@ -318,6 +349,13 @@ export default function Drive(props) {
             <Mui.IconButton aria-label="download" onClick={() => { handleActionsClick(index, "download") }}>
               <Mui.Icons.CloudDownload />
             </Mui.IconButton>}
+          {(row.type == "file" && row.mime.startsWith("audio/")) &&
+            <Mui.IconButton aria-label="add to playlist" onClick={() => {
+              handleAddToPlaylistOnClick(index)
+            }}>
+              <Mui.Icons.PlaylistAdd />
+            </Mui.IconButton>
+          }
         </Mui.TableCell>
       </Mui.TableRow>
     )))
@@ -366,6 +404,7 @@ export default function Drive(props) {
   return (
     <Mui.Card sx={{ width: props.width }}>
       <Mui.CardContent>
+        <PlaylistSelectDialog title={playlistSelectDialogState.title} message={playlistSelectDialogState.message} state={playlistSelectDialogState.state} onOk={playlistSelectDialogState.onOk} onCancel={playlistSelectDialogState.onCancel} />
         <ItemUploadDialog title={itemUploadDialogState.title} message={itemUploadDialogState.message} allowMultiFile={itemUploadDialogState.allowMultiFile} acceptedType={itemUploadDialogState.acceptedType} formKey={itemUploadDialogState.formKey} state={itemUploadDialogState.state} onUpload={itemUploadDialogState.onUpload} onOk={itemUploadDialogState.onOk} onCancel={itemUploadDialogState.onCancel} />
         <CreateFolderDialog path={createFolderDialogState.path} state={createFolderDialogState.state} onOk={createFolderDialogState.onOk} onCancel={createFolderDialogState.onCancel} />
         <PathInputDialog title={pathInputDialogState.title} message={pathInputDialogState.message} state={pathInputDialogState.state} onOk={pathInputDialogState.onOk} onCancel={pathInputDialogState.onCancel} dirOnly={pathInputDialogState.dirOnly} />
