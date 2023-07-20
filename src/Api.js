@@ -127,6 +127,10 @@ function shareLinkDelete(linkId) {
   return axios.post(`/api/xms/v1/sharelink/${linkId}/delete`)
 }
 
+function shareLinkInfo(linkId) {
+  return axios.get(`/api/xms/v1/sharelink/${linkId}/info`)
+}
+
 function userUsernameUpdate(newUsername) {
   return axios.post(`/api/xms/v1/user/username/update`, {newUsername: newUsername})
 }
@@ -206,6 +210,18 @@ function musicPlaylistEdit(playlistId, name, description) {
   })
 }
 
+function getShareLinkFilePath(linkId) {
+  return `/api/xms/v1/sharelink/${linkId}/file`
+}
+
+function getShareLinkDirFilePath(linkId, path) {
+  return `/api/xms/v1/sharelink/${linkId}/dir/file?path=${encodeURIComponent(path)}`
+}
+
+function shareLinkDir(linkId, path) {
+  return axios.post(`/api/xms/v1/sharelink/${linkId}/dir`, {path: path})
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
@@ -214,5 +230,6 @@ export {
   shareLinkDelete, driveCopy, getSongArtworkPath, getPlaylistArtworkPath, userPlaylists,
   musicPlaylistCreate, musicPlaylistDelete, musicPlaylistSongsInsert, musicPlaylistSongs,
   musicPlaylistInfo, musicPlaylistSongsSwap, musicPlaylistSongsDelete, getRndInteger,
-  getMusicPlaylistSongsFileSrc, getPlayTimeStr, musicPlaylistEdit
+  getMusicPlaylistSongsFileSrc, getPlayTimeStr, musicPlaylistEdit, shareLinkInfo,
+  getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir
 }

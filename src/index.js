@@ -28,6 +28,10 @@ const router = createBrowserRouter([
     element: <Views.Player />,
   },
   {
+    path: "/sharelink/:id",
+    element: <Views.ShareLink />,
+  },
+  {
     path: "*",
     element: <Views.NotMatch />,
   },

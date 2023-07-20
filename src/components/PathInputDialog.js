@@ -10,7 +10,7 @@ export default function PathInputDialog(props) {
 
   let CandidateList = (props) => {
     return (
-      <Mui.List sx={{ maxHeight: "500px", overflowY: "scroll" }}>
+      <Mui.List sx={{ maxHeight: "50vh", overflowY: "scroll" }}>
         {props.current !== "/" && <Mui.ListItem key={0} disablePadding>
           <Mui.ListItemButton onClick={() => {
             if (Api.dirname(props.current) == "/") { setInputValue("/") }

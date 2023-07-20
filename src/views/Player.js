@@ -328,7 +328,7 @@ export default function Player(props) {
           }}
           key="volume-change-bar"
         >
-          <Mui.Paper sx={{width: '100%', padding: '10px'}}>
+          <Mui.Paper sx={{ width: '100%', padding: '10px' }}>
             <Mui.Stack direction="row" alignItems="center" gap={1} spacing={2}>
               <Mui.Typography color='text.primary' component={"div"}><Mui.Icons.VolumeDown /></Mui.Typography>
               <Mui.Slider style={{ width: '20vw' }} size="small" aria-label="Volume" min={0} max={100} value={currentVolume} onChange={(e, v) => {
@@ -477,6 +477,7 @@ export default function Player(props) {
                           <Draggable key={`playlist-song-${row.id}`} draggableId={`playlist-song-${row.id}`} index={index}>
                             {(provided, snapshot) => (
                               <Mui.ListItem
+                                disablePadding
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
