@@ -179,6 +179,10 @@ function userPlaylists() {
   return axios.get(`/api/xms/v1/user/playlists`)
 }
 
+function userTasks() {
+  return axios.get(`/api/xms/v1/user/tasks`)
+}
+
 function getShareLinkPath(location, linkId) {
   return `${location.protocol}//${location.host}/sharelink/${linkId}`
 }
@@ -222,6 +226,35 @@ function shareLinkDir(linkId, path) {
   return axios.post(`/api/xms/v1/sharelink/${linkId}/dir`, {path: path})
 }
 
+function taskCreate(name, plugin, handler, args) {
+  return axios.post(`/api/xms/v1/task/create`, {
+    name: name,
+    plugin: plugin,
+    handler: handler,
+    args: args
+  })
+}
+
+function taskInfo(taskId) {
+  return axios.get(`/api/xms/v1/task/${taskId}/info`)
+}
+
+function taskDelete(taskId) {
+  return axios.post(`/api/xms/v1/task/${taskId}/delete`)
+}
+
+function infoPlugins() {
+  return axios.get('/api/xms/v1/info/plugins')
+}
+
+function config() {
+  return axios.get('/api/xms/v1/config')
+}
+
+function configUpdate(data) {
+  return axios.post('/api/xms/v1/config/update', data)
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
@@ -231,5 +264,6 @@ export {
   musicPlaylistCreate, musicPlaylistDelete, musicPlaylistSongsInsert, musicPlaylistSongs,
   musicPlaylistInfo, musicPlaylistSongsSwap, musicPlaylistSongsDelete, getRndInteger,
   getMusicPlaylistSongsFileSrc, getPlayTimeStr, musicPlaylistEdit, shareLinkInfo,
-  getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir
+  getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir, userTasks, infoPlugins,
+  taskCreate, taskInfo, taskDelete, config, configUpdate
 }

@@ -534,7 +534,7 @@ export default function Drive(props) {
           }}>Upload file</Mui.Button>
         </Mui.ButtonGroup>
         {<div style={{ marginTop: "10px" }}></div>}
-        <Mui.TableContainer component={Mui.Paper} >
+        <Mui.TableContainer component={'div'} >
           <Mui.Table sx={{ minWidth: 650 }} aria-label="simple table">
             <Mui.TableHead>
               <Mui.TableRow>

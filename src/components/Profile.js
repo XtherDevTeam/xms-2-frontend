@@ -266,7 +266,7 @@ export default function Profile(props) {
   }
 
   let handleSharedFileOnClick = (index) => {
-    window.location = Api.getShareLinkPath(window.location, sharedLinksList[index].id)
+    window.open(Api.getShareLinkPath(window.location, sharedLinksList[index].id))
   }
 
   let handleSharedFileDeleteOnClick = (index) => {
@@ -286,13 +286,12 @@ export default function Profile(props) {
   }
 
   let SharedFiles = () => (
-    <Mui.TableContainer component={Mui.Paper} >
+    <Mui.TableContainer component={'div'} >
       <Mui.Table sx={{ minWidth: 650 }}>
         <Mui.TableHead>
           <Mui.TableRow>
             <Mui.TableCell>Link</Mui.TableCell>
-            <Mui.TableCell style={{ width: "30%", overflow: "hidden" }}>Name</Mui.TableCell>
-            <Mui.TableCell style={{ width: "40%", overflow: "hidden" }}>Path</Mui.TableCell>
+            <Mui.TableCell>Name</Mui.TableCell>
             <Mui.TableCell>Actions</Mui.TableCell>
           </Mui.TableRow>
         </Mui.TableHead>
@@ -300,10 +299,9 @@ export default function Profile(props) {
           {sharedLinksList.map((row, index) => (
             <Mui.TableRow hover key={-1} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <Mui.TableCell>{row.id}</Mui.TableCell>
-              <Mui.TableCell style={{ width: "30%" }} onClick={() => { }}><p style={{ width: "100%", overflow: "hidden" }} onClick={() => {
+              <Mui.TableCell onClick={() => { }}><p style={{ width: "100%", overflow: "hidden" }} onClick={() => {
                 handleSharedFileOnClick(index)
               }}>{Api.basename(row.path)}</p></Mui.TableCell>
-              <Mui.TableCell style={{ width: "40%" }}><p style={{ width: "100%", overflow: "hidden" }}>{row.path}</p></Mui.TableCell>
               <Mui.TableCell>
                 <Mui.IconButton aria-label="delete" onClick={() => {
                   handleSharedFileDeleteOnClick(index)

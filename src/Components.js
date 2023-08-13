@@ -52,6 +52,11 @@ import Stack from '@mui/material/Stack'
 import Slider from '@mui/material/Slider'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import Switch from '@mui/material/Switch'
+import FormGroup from '@mui/material/FormGroup'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -63,6 +68,8 @@ import { styled } from "@mui/system"
 import Profile from './components/Profile'
 import Drive from './components/Drive'
 import Music from './components/Music'
+import Tasks from './components/Tasks'
+import Settings from './components/Settings'
 
 import FileUpload from 'react-mui-fileuploader'
 
@@ -158,5 +165,6 @@ export {
   DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
   imgBackground3, ListItemAvatar, Music, imgBackground1, Menu, MenuItem,
   BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider,
-  setThemeMode, listenToThemeModeChange
+  setThemeMode, listenToThemeModeChange, Tasks, Select, FormControl, 
+  InputLabel, Settings, Switch, FormGroup
 }

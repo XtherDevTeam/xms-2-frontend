@@ -138,6 +138,24 @@ export default function Home() {
                   <Mui.ListItemText primary="Music" />
                 </Mui.ListItemButton>
               </Mui.ListItem>
+
+              <Mui.ListItem key="Tasks" disablePadding>
+                <Mui.ListItemButton onClick={() => { setCurrentTab(3) }}>
+                  <Mui.ListItemIcon>
+                    <Mui.Icons.TaskSharp />
+                  </Mui.ListItemIcon>
+                  <Mui.ListItemText primary="Tasks" />
+                </Mui.ListItemButton>
+              </Mui.ListItem>
+
+              <Mui.ListItem key="Settings" disablePadding>
+                <Mui.ListItemButton onClick={() => { setCurrentTab(4) }}>
+                  <Mui.ListItemIcon>
+                    <Mui.Icons.Settings />
+                  </Mui.ListItemIcon>
+                  <Mui.ListItemText primary="Settings" />
+                </Mui.ListItemButton>
+              </Mui.ListItem>
             </Mui.List>
           </Mui.Box>
         </Mui.Drawer>
@@ -148,6 +166,8 @@ export default function Home() {
           {currentTab === 0 && <Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" />}
           {currentTab === 1 && <Mui.Drive userInfo={userInfo} width="100%" />}
           {currentTab === 2 && <Mui.Music userInfo={userInfo} width="100%" />}
+          {currentTab === 3 && <Mui.Tasks userInfo={userInfo} width="100%" />}
+          {currentTab === 4 && <Mui.Settings userInfo={userInfo} width="100%" />}
         </Mui.Box>
       </Mui.Box>
     </ThemeProvider>
