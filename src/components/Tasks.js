@@ -392,7 +392,7 @@ export default function Tasks(props) {
           </Mui.Table>
         </Mui.TableContainer>
         <Mui.Fab sx={{
-          position: 'absolute',
+          position: 'fixed',
           bottom: 16,
           right: 16,
         }} color="primary" aria-label="add" onClick={() => {

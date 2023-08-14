@@ -2,8 +2,9 @@ import * as React from 'react'
 import * as Mui from '../Components'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import loginBackground from '../assets/loginBackground.jpg'
-import { submitSignup } from '../Api'
+import { submitSignup, info } from '../Api'
 import { useNavigate, useHref } from "react-router-dom"
+import { Api } from '@mui/icons-material'
 
 function Copyright(props) {
   return (
@@ -17,21 +18,26 @@ function Copyright(props) {
   );
 }
 
-export default function SignUpSide() {
+export default function SignUpSide(props) {
   const navigate = useNavigate();
 
   const [alertOpen, setAlertOpen] = React.useState(false)
   const [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
+
+  const [serverInfo, setServerInfo] = React.useState({
+    enableInviteCode: 0
+  })
+
   let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
   Mui.listenToThemeModeChange((v) => {
     setCurrentTheme(Mui.theme())
   })
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log(data.get('username'), data.get('password'), data.get('slogan'));
-    submitSignup(data.get('username'), data.get('password'), data.get('slogan')).then((data) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    console.log(data.get('username'), data.get('password'), data.get('slogan'))
+    submitSignup(data.get('username'), data.get('password'), data.get('slogan'), data.get('inviteCode')).then((data) => {
       if (data.data.ok) {
         setAlertDetail({ "type": "success", "message": "Registration completed. Redirecting you to SignIn page.", "title": "Success" })
         setAlertOpen(true)
@@ -46,7 +52,16 @@ export default function SignUpSide() {
       setAlertDetail({ "type": "error", "message": "Clientside response: " + err.data, "title": "Error" })
       setAlertOpen(true)
     })
-  };
+  }
+
+  React.useEffect(() => {
+    info().then(data => {
+      setServerInfo(data.data)
+    }).catch(err => {
+      setAlertDetail({ "type": "error", "message": "Error fetching server info: NetworkError", "title": "Error" })
+      setAlertOpen(true)
+    })
+  }, [props])
 
   return (
     <ThemeProvider theme={currentTheme}>
@@ -128,6 +143,16 @@ export default function SignUpSide() {
                 name="slogan"
                 label="Slogan"
                 id="slogan"
+                autoComplete=""
+              />
+              <Mui.TextField
+                margin="normal"
+                fullWidth
+                variant='filled'
+                name="inviteCode"
+                label="Invite code"
+                id="inviteCode"
+                disabled={serverInfo.enableInviteCode === 0}
                 autoComplete=""
               />
               {/* no need to handle onClick here because this is a form */}

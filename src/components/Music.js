@@ -225,7 +225,7 @@ export default function Music(props) {
         <CustomTabPanel value={currentTab} index={0}>
           <CreatePlaylistDialog></CreatePlaylistDialog>
           <Mui.Fab sx={{
-            position: 'absolute',
+            position: 'fixed',
             bottom: 16,
             right: 16,
           }} color="primary" aria-label="add" onClick={() => { setCreatePlaylistDialogState(true) }}>

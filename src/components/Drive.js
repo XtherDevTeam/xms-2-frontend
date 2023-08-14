@@ -45,9 +45,14 @@ function defaultFilesContextMenuState() {
   return { state: false, row: {}, index: 0, posX: 0, posY: 0, targetEl: null }
 }
 
+function defaultDriveContextMenuState() {
+  return { state: false, row: {}, index: 0, posX: 0, posY: 0, targetEl: null }
+}
+
 
 export default function Drive(props) {
   let [filesContextMenuState, setFilesContextMenuState] = React.useState(defaultFilesContextMenuState())
+  let [driveContextMenuState, setDriveContextMenuState] = React.useState(defaultDriveContextMenuState())
   let [confirmDialogState, setConfirmDialogState] = React.useState(defaultConfirmDialogState())
   let [itemRenameDialogState, setItemRenameDialogState] = React.useState(defaultItemRenameDialogState())
   let [pathInputDialogState, setPathInputDialogState] = React.useState(defaultPathInputDialogState())
@@ -253,6 +258,88 @@ export default function Drive(props) {
             <Mui.ListItemText>Add to playlist</Mui.ListItemText>
           </Mui.MenuItem>
         }
+      </Mui.Menu>
+    )
+  }
+
+  function DriveContextMenu() {
+    return (
+      <Mui.Menu
+        id="drive-menu"
+        open={driveContextMenuState.state}
+        onClose={() => {
+          setDriveContextMenuState(defaultDriveContextMenuState())
+        }}
+        anchorEl={driveContextMenuState.targetEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+      >
+        <Mui.MenuItem onClick={() => {
+          setCreateFolderDialogState({ "path": driveInfo.path, "state": true, onOk: () => { setCreateFolderDialogState(defaultCreateFolderDialogState()); updateDriveInfo() }, onCancel: () => { setCreateFolderDialogState(defaultCreateFolderDialogState()) } })
+          setDriveContextMenuState(defaultDriveContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.CreateNewFolder fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Create folder</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          updateDriveInfo()
+          setDriveContextMenuState(defaultDriveContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.Refresh fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Refresh</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          setItemUploadDialogState({
+            title: "Upload files", message: "", acceptedType: "*/*",
+            allowMultiFile: true, formKey: "yoimiya",
+            onOk: (formData) => {
+              setAlertDetail({ "type": "info", "title": "Uploading...", "message": `Please be patient, and DO NOT close the dialog.` })
+              setAlertOpen(true)
+              Api.driveUpload(driveInfo.path, formData).then((data) => {
+                if (data.data.ok) {
+                  setAlertDetail({ "type": "success", "title": "Success", "message": `Finished uploading to ${driveInfo.path}` })
+                  setAlertOpen(true)
+                } else {
+                  setAlertDetail({ "type": "error", "title": "Error", "message": `Error uploading files: ${data.data.data}` })
+                  setAlertOpen(true)
+                }
+                setItemUploadDialogState(defaultItemUploadDialogState())
+                updateDriveInfo()
+              }).catch((err) => {
+                setAlertDetail({ "type": "error", "title": "Error", "message": `Error uploading files: NetworkError` })
+                setAlertOpen(true)
+                setItemUploadDialogState(defaultItemUploadDialogState())
+              })
+            },
+            onCancel: () => { setItemUploadDialogState(defaultItemUploadDialogState()) },
+            state: true
+          })
+          setDriveContextMenuState(defaultDriveContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.UploadFile fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Upload file</Mui.ListItemText>
+        </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          
+          setDriveContextMenuState(defaultDriveContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.MusicNote fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Download music</Mui.ListItemText>
+        </Mui.MenuItem>
       </Mui.Menu>
     )
   }
@@ -496,43 +583,14 @@ export default function Drive(props) {
           {breadcrumb}
         </Mui.Breadcrumbs>
         <Mui.Typography variant='' color="text.secondary">
-          <span><Mui.Icons.Book fontSize='small' /> Total: {driveInfo.info.info.total} {"Item(s)"} </span>
-          <span>{driveInfo.info.info.files} {"file(s)"},{driveInfo.info.info.dirs} {"folder(s)"}</span>
+          <Mui.IconText>
+            <Mui.Icons.Book fontSize='small' />
+            <span>Total: {driveInfo.info.info.total} {"Item(s)"} </span>
+            <span>{driveInfo.info.info.files} {"file(s)"},{driveInfo.info.info.dirs} {"folder(s)"}</span>
+          </Mui.IconText>
         </Mui.Typography>
         {<div style={{ marginTop: "10px" }}></div>}
-        <Mui.ButtonGroup variant="outlined" >
-          <Mui.Button onClick={() => {
-            setCreateFolderDialogState({ "path": driveInfo.path, "state": true, onOk: () => { setCreateFolderDialogState(defaultCreateFolderDialogState()); updateDriveInfo() }, onCancel: () => { setCreateFolderDialogState(defaultCreateFolderDialogState()) } })
-          }}>Create folder</Mui.Button>
-          <Mui.Button onClick={() => { updateDriveInfo() }}>Refresh</Mui.Button>
-          <Mui.Button onClick={() => {
-            setItemUploadDialogState({
-              title: "Upload files", message: "", acceptedType: "*/*",
-              allowMultiFile: true, formKey: "yoimiya",
-              onOk: (formData) => {
-                setAlertDetail({ "type": "info", "title": "Uploading...", "message": `Please be patient, and DO NOT close the dialog.` })
-                setAlertOpen(true)
-                Api.driveUpload(driveInfo.path, formData).then((data) => {
-                  if (data.data.ok) {
-                    setAlertDetail({ "type": "success", "title": "Success", "message": `Finished uploading to ${driveInfo.path}` })
-                    setAlertOpen(true)
-                  } else {
-                    setAlertDetail({ "type": "error", "title": "Error", "message": `Error uploading files: ${data.data.data}` })
-                    setAlertOpen(true)
-                  }
-                  setItemUploadDialogState(defaultItemUploadDialogState())
-                  updateDriveInfo()
-                }).catch((err) => {
-                  setAlertDetail({ "type": "error", "title": "Error", "message": `Error uploading files: NetworkError` })
-                  setAlertOpen(true)
-                  setItemUploadDialogState(defaultItemUploadDialogState())
-                })
-              },
-              onCancel: () => { setItemUploadDialogState(defaultItemUploadDialogState()) },
-              state: true
-            })
-          }}>Upload file</Mui.Button>
-        </Mui.ButtonGroup>
+
         {<div style={{ marginTop: "10px" }}></div>}
         <Mui.TableContainer component={'div'} >
           <Mui.Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -563,6 +621,17 @@ export default function Drive(props) {
             </Mui.TableBody>
           </Mui.Table>
         </Mui.TableContainer>
+        <Mui.Fab sx={{
+          position: 'fixed',
+          bottom: 16,
+          right: 16,
+        }} color="primary" onClick={(e) => {
+          console.log(e.currentTarget)
+          setDriveContextMenuState({ state: true, targetEl: e.currentTarget })
+        }}>
+          <Mui.Icons.MoreVert />
+        </Mui.Fab>
+        <DriveContextMenu></DriveContextMenu>
       </Mui.CardContent>
     </Mui.Card>
   );

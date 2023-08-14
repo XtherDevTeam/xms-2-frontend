@@ -57,6 +57,10 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Switch from '@mui/material/Switch'
 import FormGroup from '@mui/material/FormGroup'
+import Fade from '@mui/material/Fade'
+import Grow from '@mui/material/Grow'
+import Collapse from '@mui/material/Collapse'
+import { TransitionGroup } from 'react-transition-group'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -70,6 +74,7 @@ import Drive from './components/Drive'
 import Music from './components/Music'
 import Tasks from './components/Tasks'
 import Settings from './components/Settings'
+import UserManagement from './components/UserManagement'
 
 import FileUpload from 'react-mui-fileuploader'
 
@@ -165,6 +170,7 @@ export {
   DialogActions, DialogContent, DialogContentText, DialogTitle, FileUpload,
   imgBackground3, ListItemAvatar, Music, imgBackground1, Menu, MenuItem,
   BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider,
-  setThemeMode, listenToThemeModeChange, Tasks, Select, FormControl, 
-  InputLabel, Settings, Switch, FormGroup
+  setThemeMode, listenToThemeModeChange, Tasks, Select, FormControl,
+  InputLabel, Settings, Switch, FormGroup, UserManagement, Fade, Grow,
+  TransitionGroup, Collapse
 }

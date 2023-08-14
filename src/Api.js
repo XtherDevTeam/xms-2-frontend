@@ -37,6 +37,10 @@ function checkIfLoggedIn() {
   return axios.get("/api/xms/v1/user/status")
 }
 
+function info() {
+  return axios.get("/api/xms/v1/info")
+}
+
 function signOut(path) {
   return axios.post("/api/xms/v1/signout",)
 }
@@ -155,7 +159,7 @@ function submitLogin(username, password) {
   )
 }
 
-function submitSignup(username, password, slogan) {
+function submitSignup(username, password, slogan, inviteCode) {
   return new Promise((resolve, reject) => {
     if (username.length > 64 || password.length > 128 || slogan.length > 64) {
       reject(makeResult(false, "username, password or slogan out of length limitations"))
@@ -167,7 +171,7 @@ function submitSignup(username, password, slogan) {
     if (slogan.length === 0) {
       slogan = "Fireworks are for now, but friends are forever!"
     }
-    return axios.post("/api/xms/v1/signup", { "username": username, "password": password, "slogan": slogan })
+    return axios.post("/api/xms/v1/signup", { "username": username, "password": password, "slogan": slogan, "inviteCode": inviteCode })
   })
 }
 
@@ -255,6 +259,22 @@ function configUpdate(data) {
   return axios.post('/api/xms/v1/config/update', data)
 }
 
+function userManageList() {
+  return axios.get('/api/xms/v1/user/manage/list')
+}
+
+function userManageDelete(id) {
+  return axios.post('/api/xms/v1/user/manage/delete', {id: id})
+}
+
+function userManageUpdateLevel(id, level) {
+  return axios.post('/api/xms/v1/user/manage/updateLevel', {id: id, level: level})
+}
+
+function userManageCreate(name, password, slogan, level) {
+  return axios.post('/api/xms/v1/user/manage/create', {name: name, password: password, slogan: slogan, level: level})
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
@@ -265,5 +285,6 @@ export {
   musicPlaylistInfo, musicPlaylistSongsSwap, musicPlaylistSongsDelete, getRndInteger,
   getMusicPlaylistSongsFileSrc, getPlayTimeStr, musicPlaylistEdit, shareLinkInfo,
   getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir, userTasks, infoPlugins,
-  taskCreate, taskInfo, taskDelete, config, configUpdate
+  taskCreate, taskInfo, taskDelete, config, configUpdate, info, userManageDelete,
+  userManageUpdateLevel, userManageList, userManageCreate
 }

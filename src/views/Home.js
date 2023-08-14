@@ -11,7 +11,7 @@ export default function Home() {
   let navigate = useNavigate();
 
   let [userInfo, setUserInfo] = React.useState({})
-
+  let [sidebarStatus, setSidebarStatus] = React.useState(true)
   let [currentTab, setCurrentTab] = React.useState(0)
 
   let [alertOpen, setAlertOpen] = React.useState(false)
@@ -82,25 +82,36 @@ export default function Home() {
         <Mui.CssBaseline />
         <Mui.AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Mui.Toolbar>
+            <Mui.IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => { setSidebarStatus(!sidebarStatus) }}
+            >
+              <Mui.Icons.Menu />
+            </Mui.IconButton>
             <Mui.Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
               XmediaCenter2
             </Mui.Typography>
             <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
               Mui.setThemeMode(currentTheme.palette.mode === 'dark' ? 'light' : 'dark')
             }}>
-              {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 color='white' /> : <Mui.Icons.Brightness4 color='white' />}
+              {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 sx={{ color: 'white' }} /> : <Mui.Icons.Brightness4 sx={{ color: 'white' }} />}
             </Mui.IconButton>
             <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
               handleSignOutBtnClick()
             }}>
-              <Mui.Icons.Logout color='white' />
+              <Mui.Icons.Logout sx={{ color: 'white' }} />
             </Mui.IconButton>
           </Mui.Toolbar>
         </Mui.AppBar>
         <Mui.Drawer
-          variant="permanent"
+          variant='persistent'
+          open={sidebarStatus}
+          onClose={() => setSidebarStatus(false)}
           sx={{
-            width: "20%",
+            width: sidebarStatus ? '20%' : '0px',
             flexShrink: 0,
             [`& .MuiDrawer-paper`]: {
               width: "20%", boxSizing: 'border-box',
@@ -109,7 +120,7 @@ export default function Home() {
           }}
         >
           <Mui.Toolbar />
-          <Mui.Box sx={{ overflow: 'auto' }}>
+          <Mui.Box sx={{ overflow: 'auto', }}>
             <Mui.List>
               <Mui.ListItem key="Profile" disablePadding>
                 <Mui.ListItemButton onClick={() => { setCurrentTab(0) }}>
@@ -148,14 +159,23 @@ export default function Home() {
                 </Mui.ListItemButton>
               </Mui.ListItem>
 
-              <Mui.ListItem key="Settings" disablePadding>
+              {userInfo.level >= 2 && <Mui.ListItem key="User Management" disablePadding>
                 <Mui.ListItemButton onClick={() => { setCurrentTab(4) }}>
+                  <Mui.ListItemIcon>
+                    <Mui.Icons.ManageAccounts />
+                  </Mui.ListItemIcon>
+                  <Mui.ListItemText primary="User Management" />
+                </Mui.ListItemButton>
+              </Mui.ListItem>}
+
+              {userInfo.level >= 1 && <Mui.ListItem key="Settings" disablePadding>
+                <Mui.ListItemButton onClick={() => { setCurrentTab(5) }}>
                   <Mui.ListItemIcon>
                     <Mui.Icons.Settings />
                   </Mui.ListItemIcon>
                   <Mui.ListItemText primary="Settings" />
                 </Mui.ListItemButton>
-              </Mui.ListItem>
+              </Mui.ListItem>}
             </Mui.List>
           </Mui.Box>
         </Mui.Drawer>
@@ -163,11 +183,14 @@ export default function Home() {
           flexGrow: 1, p: 3,
         }}>
           <Mui.Toolbar />
-          {currentTab === 0 && <Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" />}
-          {currentTab === 1 && <Mui.Drive userInfo={userInfo} width="100%" />}
-          {currentTab === 2 && <Mui.Music userInfo={userInfo} width="100%" />}
-          {currentTab === 3 && <Mui.Tasks userInfo={userInfo} width="100%" />}
-          {currentTab === 4 && <Mui.Settings userInfo={userInfo} width="100%" />}
+          <Mui.TransitionGroup>
+            {currentTab === 0 && <Mui.Fade key={0} exit={false}><div style={{ width: "100%" }}><Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" /></div></Mui.Fade>}
+            {currentTab === 1 && <Mui.Fade key={1} exit={false}><div style={{ width: "100%" }}><Mui.Drive userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+            {currentTab === 2 && <Mui.Fade key={2} exit={false}><div style={{ width: "100%" }}><Mui.Music userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+            {currentTab === 3 && <Mui.Fade key={3} exit={false}><div style={{ width: "100%" }}><Mui.Tasks userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+            {currentTab === 4 && <Mui.Fade key={4} exit={false}><div style={{ width: "100%" }}><Mui.UserManagement userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+            {currentTab === 5 && <Mui.Fade key={5} exit={false}><div style={{ width: "100%" }}><Mui.Settings userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+          </Mui.TransitionGroup>
         </Mui.Box>
       </Mui.Box>
     </ThemeProvider>
