@@ -49,6 +49,10 @@ function defaultDriveContextMenuState() {
   return { state: false, row: {}, index: 0, posX: 0, posY: 0, targetEl: null }
 }
 
+function defaultDownloadMusicDialogState() {
+  return { onOk: (param) => { }, onCancel: () => { }, state: false }
+}
+
 
 export default function Drive(props) {
   let [filesContextMenuState, setFilesContextMenuState] = React.useState(defaultFilesContextMenuState())
@@ -59,6 +63,7 @@ export default function Drive(props) {
   let [createFolderDialogState, setCreateFolderDialogState] = React.useState(defaultCreateFolderDialogState())
   let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
   let [playlistSelectDialogState, setPlaylistSelectDialogState] = React.useState(defaultPlaylistSelectDialogState())
+  let [downloadMusicDialogState, setDownloadMusicDialogState] = React.useState(defaultDownloadMusicDialogState())
 
   let [rawPreviewComponent, setRawPreviewComponent] = React.useState(<></>)
   let [previewOpen, setPreviewOpen] = React.useState(false)
@@ -69,6 +74,27 @@ export default function Drive(props) {
   let [breadcrumb, setBreadcrumb] = React.useState("loading...")
   let [rawTableRows, setRawTableRows] = React.useState(<div></div>)
 
+  function DownloadMusicDialog(props) {
+    let [param, setParam] = React.useState("")
+    return (
+      <Mui.Dialog onClose={() => { props.onCancel() }} open={props.state}>
+        <Mui.DialogTitle>Download music</Mui.DialogTitle>
+        <Mui.DialogContent>
+          <Mui.Typography variant='body2' color='text.secondary'>
+            Download music from Youtube Music with spotdl. Make sure you have installed spotdl and enabled spotdlBackend plugin properly.<br></br>
+            DISCLAIMER: Users have to follow the local law when using this tool. Users should take responsibility on the outcome of using this tool.
+          </Mui.Typography>
+          <Mui.TextField value={param} onChange={(e) => { setParam(e.currentTarget.value) }} label="Search param" variant="filled" margin="normal" fullWidth />
+        </Mui.DialogContent>
+        <Mui.DialogActions>
+          <Mui.Button onClick={() => { props.onCancel() }}>Cancel</Mui.Button>
+          <Mui.Button onClick={() => { props.onOk(param) }} autoFocus>
+            OK
+          </Mui.Button>
+        </Mui.DialogActions>
+      </Mui.Dialog>
+    )
+  }
 
   function ConfirmDialog(props) {
     return (
@@ -332,7 +358,28 @@ export default function Drive(props) {
           <Mui.ListItemText>Upload file</Mui.ListItemText>
         </Mui.MenuItem>
         <Mui.MenuItem onClick={() => {
-          
+          setDownloadMusicDialogState({
+            onOk(param) {
+              console.log([param, driveInfo['path']])
+              Api.taskCreate('Download music', 'spotdlBackend', 'download', [param, driveInfo['path']]).then(data => {
+                if (data.data.ok) {
+                  setAlertDetail({ type: 'success', title: 'Success', message: 'Task created, go to Tasks for more information' })
+                  setAlertOpen(true)
+                } else {
+                  setAlertDetail({ type: 'error', title: `Error creating task: ${data.data.data}` })
+                  setAlertOpen(true)
+                }
+              }).catch((err) => {
+                setAlertDetail({ type: 'error', title: `Error creating task: NetworkError` })
+                setAlertOpen(true)
+              })
+              setDownloadMusicDialogState(defaultDownloadMusicDialogState())
+            },
+            onCancel() {
+              setDownloadMusicDialogState(defaultDownloadMusicDialogState())
+            },
+            state: true
+          })
           setDriveContextMenuState(defaultDriveContextMenuState())
         }}>
           <Mui.ListItemIcon>
@@ -562,6 +609,7 @@ export default function Drive(props) {
         <PathInputDialog title={pathInputDialogState.title} message={pathInputDialogState.message} state={pathInputDialogState.state} onOk={pathInputDialogState.onOk} onCancel={pathInputDialogState.onCancel} dirOnly={pathInputDialogState.dirOnly} />
         <ItemRenameDialog origin={itemRenameDialogState.origin} path={itemRenameDialogState.path} state={itemRenameDialogState.state} onOk={itemRenameDialogState.onOk} onCancel={itemRenameDialogState.onCancel}></ItemRenameDialog>
         <ConfirmDialog title={confirmDialogState.title} message={confirmDialogState.message} state={confirmDialogState.state} onOk={confirmDialogState.onOk} onCancel={confirmDialogState.onCancel}></ConfirmDialog>
+        <DownloadMusicDialog state={downloadMusicDialogState.state} onOk={downloadMusicDialogState.onOk} onCancel={downloadMusicDialogState.onCancel}></DownloadMusicDialog>
         <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
           <Mui.Alert severity={alertDetail.type} action={
             <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >

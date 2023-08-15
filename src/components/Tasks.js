@@ -162,6 +162,7 @@ export default function Tasks(props) {
       // ended
       console.log("refresh clear", taskDetailsRefreshInterval)
       clearInterval(taskDetailsRefreshInterval)
+      refreshUserTasks()
     }
   }, [taskDetailsDialogState])
 
