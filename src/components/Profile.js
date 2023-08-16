@@ -229,7 +229,7 @@ export default function Profile(props) {
   let handleChangeUserPasswordOnClick = () => {
     setPasswordChangeDialogState({
       title: "Change password",
-      message: "Please remember you password. Once you forget it, you will not be able to use this account again.",
+      message: "Please remember your password. Once you forget it, you will not be able to use this account again.",
       state: true,
       onOk: (oldPassword, newPassword) => {
         Api.userPasswordUpdate(oldPassword, newPassword).then((data) => {

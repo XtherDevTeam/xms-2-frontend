@@ -227,8 +227,13 @@ export default function Player(props) {
     }
   }, [])
 
-  let EditPlaylistDialog = () => {
-    return (
+  return (
+    <ThemeProvider theme={createTheme({
+      palette: {
+        mode: 'dark',
+      }
+    })}>
+      <BlurBackground loading="lazy" img={`${currentArtwork}`} filterArg="50px" backgroundColor="rgba(0, 0, 0, 0.40)"></BlurBackground>
       <Mui.Dialog open={editPlaylistDialogStatus} onClose={() => {
         setEditPlaylistDialogStatus(false)
       }}>
@@ -297,17 +302,6 @@ export default function Player(props) {
           </Mui.DialogActions>
         </Mui.Box>
       </Mui.Dialog>
-    )
-  }
-
-  return (
-    <ThemeProvider theme={createTheme({
-      palette: {
-        mode: 'dark',
-      }
-    })}>
-      <BlurBackground loading="lazy" img={`${currentArtwork}`} filterArg="50px" backgroundColor="rgba(0, 0, 0, 0.40)"></BlurBackground>
-      <EditPlaylistDialog></EditPlaylistDialog>
       <Mui.Container style={{ height: '100vh', overflowY: 'hidden' }}>
         <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
           <Mui.Alert severity={alertDetail.type} action={
