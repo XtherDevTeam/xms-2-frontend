@@ -198,6 +198,7 @@ export default function Player(props) {
       updateCurrentPlayStatus()
       setCurrentProgress(audioRef.current.currentTime)
       setCurrentDuration(audioRef.current.duration)
+      audioRef.current.volume = currentVolume / 100.0
       if (!inInitialState) {
         forceStartPlaying()
       } else {
