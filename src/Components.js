@@ -61,6 +61,7 @@ import Fade from '@mui/material/Fade'
 import Grow from '@mui/material/Grow'
 import Collapse from '@mui/material/Collapse'
 import { TransitionGroup } from 'react-transition-group'
+import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -172,5 +173,5 @@ export {
   BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider,
   setThemeMode, listenToThemeModeChange, Tasks, Select, FormControl,
   InputLabel, Settings, Switch, FormGroup, UserManagement, Fade, Grow,
-  TransitionGroup, Collapse
+  TransitionGroup, Collapse, SwipeableDrawer
 }

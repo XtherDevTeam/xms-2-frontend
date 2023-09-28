@@ -107,7 +107,7 @@ function musicPlaylistDelete(id) {
 }
 
 function musicPlaylistSongsDelete(playlistId, sid) {
-  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/delete`, {
+  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/songs/delete`, {
     songId: sid
   })
 }
