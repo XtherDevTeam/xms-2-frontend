@@ -48,11 +48,28 @@ export default function Player(props) {
   let [lastStartTime, setLastStartTime] = React.useState(0)
   let [currentPlayTime, setCurrentPlayTime] = React.useState(0)
   let [currentDuration, setCurrentDuration] = React.useState(0)
+  // let [currentPlayCountUpdated, setCurrentPlayCountUpdated] = React.useState(false)
 
+  let currentPlayCountUpdated = React.useRef(false)
   let audioRef = React.useRef(new Audio(""))
   let intervalRef = React.useRef()
+  let isInitialReadyToPlay = React.useRef(false)
 
   let updateCurrentPlayStatus = () => {
+    if (audioRef.current.currentTime > audioRef.current.duration / 2 && !currentPlayCountUpdated.current) {
+      Api.increaseSongPlayCount(currentTrackInfo.id).then(data => {
+        if (data.data.ok) {
+          console.log("update play count success")
+          currentPlayCountUpdated.current = true
+        } else {
+          setAlertDetail({"type": "error", "title": "Error", "message": `Error updating song play count: ${data.data.data}`})
+          setAlertOpen(true)
+        }
+      }).catch(err => {
+        setAlertDetail({"type": "error", "title": "Error", "message": `Error updating song play count: NetworkError`})
+        setAlertOpen(true)
+      })
+    }
     setCurrentPlayStatus({
       progressStr: Api.getPlayTimeStr(audioRef.current.currentTime),
       durationStr: Api.getPlayTimeStr(audioRef.current.duration)
@@ -74,6 +91,7 @@ export default function Player(props) {
 
   let selectNextSong = (isClickedEvent, lastSongIndex) => {
     console.log("SELECTING NEXT SONG:", isClickedEvent, playlistSongList)
+    currentPlayCountUpdated.current = false
     if (playlistSongList.length == 0) {
       setAlertDetail({ "type": "error", "title": "Error", "message": `Error selecting next song: playlist is empty!` })
       setAlertOpen(true)
@@ -203,6 +221,7 @@ export default function Player(props) {
         forceStartPlaying()
       } else {
         setInInitialState(false)
+        isInitialReadyToPlay.current = true
       }
     }
     audioRef.current.onpause = () => {
@@ -213,6 +232,21 @@ export default function Player(props) {
       prepareForPlaying(false, selectNextSong)
     }
     audioRef.current.onplay = () => {
+      if (isInitialReadyToPlay) {
+        Api.increasePlaylistPlayCount(searchParams.playlistId).then(data => {
+          if (data.data.ok) {
+            console.log("update playlist play count successfully")
+            isInitialReadyToPlay.current = false
+            refreshPlaylistInfo(searchParams.playlistId)
+          } else {
+            setAlertDetail({type: "error", title: "Error", message: `Error increasing playlist play count: ${data.data.data}`})
+            setAlertOpen(true)
+          }
+        }).catch(err => {
+          setAlertDetail({type: "error", title: "Error", message: `Error increasing playlist play count: NetworkError`})
+          setAlertOpen(true)
+        })
+      }
       setCurrentPlayInfoStatus(true)
     }
   }, [currentMusicFile])

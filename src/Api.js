@@ -275,6 +275,14 @@ function userManageCreate(name, password, slogan, level) {
   return axios.post('/api/xms/v1/user/manage/create', {name: name, password: password, slogan: slogan, level: level})
 }
 
+function increasePlaylistPlayCount (playlistId) {
+  return axios.post(`/api/xms/v1/music/playlist/${playlistId}/increasePlayCount`)
+}
+
+function increaseSongPlayCount (songId) {
+  return axios.post(`/api/xms/v1/music/song/${songId}/increasePlayCount`)
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
@@ -286,5 +294,6 @@ export {
   getMusicPlaylistSongsFileSrc, getPlayTimeStr, musicPlaylistEdit, shareLinkInfo,
   getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir, userTasks, infoPlugins,
   taskCreate, taskInfo, taskDelete, config, configUpdate, info, userManageDelete,
-  userManageUpdateLevel, userManageList, userManageCreate
+  userManageUpdateLevel, userManageList, userManageCreate, increasePlaylistPlayCount,
+  increaseSongPlayCount
 }
