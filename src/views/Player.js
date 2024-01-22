@@ -171,6 +171,7 @@ export default function Player(props) {
   }
 
   React.useEffect(() => {
+    isInitialReadyToPlay.current = false
     let result = qs.parse(window.location.search.replace(/^\?/, ''))
     if (result.playlistId === undefined) {
       setAlertDetail({ "type": "error", "title": "Error", "message": "playlistId doesn't not provided in the param" })
