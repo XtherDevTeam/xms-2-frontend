@@ -600,7 +600,7 @@ export default function Drive(props) {
     updateDriveInfo()
   }, [])
   return (
-    <Mui.Card sx={{ width: props.width }}>
+    <div>
       <Mui.CardContent>
         <FilesContextMenu></FilesContextMenu>
         <PlaylistSelectDialog title={playlistSelectDialogState.title} message={playlistSelectDialogState.message} state={playlistSelectDialogState.state} onOk={playlistSelectDialogState.onOk} onCancel={playlistSelectDialogState.onCancel} />
@@ -681,6 +681,6 @@ export default function Drive(props) {
         </Mui.Fab>
         <DriveContextMenu></DriveContextMenu>
       </Mui.CardContent>
-    </Mui.Card>
+    </div>
   );
 }

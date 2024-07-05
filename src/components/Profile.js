@@ -399,7 +399,7 @@ export default function Profile(props) {
   }, [props])
 
   return (
-    <Mui.Card sx={{ width: props.width }}>
+    <div>
       <PasswordChangeDialog />
       <Mui.Dialog onClose={() => { textChangeDialogState.onCancel() }} open={textChangeDialogState.state}>
         <Mui.DialogTitle>{textChangeDialogState.title}</Mui.DialogTitle>
@@ -468,6 +468,6 @@ export default function Profile(props) {
           <EditProfile />
         </CustomTabPanel>
       </Mui.CardContent>
-    </Mui.Card>
+    </div>
   );
 }

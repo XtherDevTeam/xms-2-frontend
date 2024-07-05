@@ -263,7 +263,7 @@ export default function Settings(props) {
   }
 
   return (
-    <Mui.Card sx={{ width: props.width }}>
+    <div>
       <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
         <Mui.Alert severity={alertDetail.type} action={
           <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >
@@ -326,6 +326,6 @@ export default function Settings(props) {
           <Mui.Icons.Add />
         </Mui.Fab>
       </Mui.CardContent>
-    </Mui.Card>
+    </div>
   )
 }

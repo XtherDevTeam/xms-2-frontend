@@ -83,6 +83,8 @@ import { createTheme } from '@mui/material/styles'
 
 import * as React from 'react'
 
+import * as Themes from './theme'
+
 // backgroundColor: "rgba(255, 255, 255, 0.24)",
 //               backdropFilter: "blur(15px)",
 
@@ -119,23 +121,7 @@ let theme = () => {
   }
 
   document.getElementsByTagName('body')[0].style.backgroundColor = window.localStorage.getItem('themeMode') === 'light' ? '#fafafa' : '#303030'
-  return createTheme({
-    palette: {
-      mode: window.localStorage.getItem('themeMode'),
-      primary: {
-        light: '#ea4c03',
-        main: '#f36903',
-        dark: '#f97902',
-        contrastText: '#fff',
-      },
-      secondary: {
-        light: '#1a3db3',
-        main: '#165dd2',
-        dark: '#116fe5',
-        contrastText: '#000',
-      },
-    },
-  })
+  return window.localStorage.getItem('themeMode') === 'light' ? Themes.default.light : Themes.default.dark
 }
 
 

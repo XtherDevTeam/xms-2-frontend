@@ -115,7 +115,7 @@ export default function Home() {
             flexShrink: 0,
             [`& .MuiDrawer-paper`]: {
               width: "20%", boxSizing: 'border-box',
-              backgroundColor: currentTheme.palette.mode === 'light' ? '#ffffff' : '#424242'
+              // backgroundColor: currentTheme.palette.mode === 'light' ? '#ffffff' : '#424242'
             },
           }}
         >
@@ -181,16 +181,19 @@ export default function Home() {
         </Mui.Drawer>
         <Mui.Box component="main" sx={{
           flexGrow: 1, p: 3,
+          backgroundColor: currentTheme.palette.surfaceContainer.main
         }}>
           <Mui.Toolbar />
-          <Mui.TransitionGroup>
-            {currentTab === 0 && <Mui.Fade key={0} exit={false}><div style={{ width: "100%" }}><Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" /></div></Mui.Fade>}
-            {currentTab === 1 && <Mui.Fade key={1} exit={false}><div style={{ width: "100%" }}><Mui.Drive userInfo={userInfo} width="100%" /></div></Mui.Fade>}
-            {currentTab === 2 && <Mui.Fade key={2} exit={false}><div style={{ width: "100%" }}><Mui.Music userInfo={userInfo} width="100%" /></div></Mui.Fade>}
-            {currentTab === 3 && <Mui.Fade key={3} exit={false}><div style={{ width: "100%" }}><Mui.Tasks userInfo={userInfo} width="100%" /></div></Mui.Fade>}
-            {currentTab === 4 && <Mui.Fade key={4} exit={false}><div style={{ width: "100%" }}><Mui.UserManagement userInfo={userInfo} width="100%" /></div></Mui.Fade>}
-            {currentTab === 5 && <Mui.Fade key={5} exit={false}><div style={{ width: "100%" }}><Mui.Settings userInfo={userInfo} width="100%" /></div></Mui.Fade>}
-          </Mui.TransitionGroup>
+          <Mui.Paper style={{ padding: 0, borderTopLeftRadius: 30, height: `calc(100vh - 64px)`, overflowY: 'scroll' }}>
+            <Mui.TransitionGroup>
+              {currentTab === 0 && <Mui.Fade key={0} exit={false}><div style={{ width: "100%" }}><Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" /></div></Mui.Fade>}
+              {currentTab === 1 && <Mui.Fade key={1} exit={false}><div style={{ width: "100%" }}><Mui.Drive userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+              {currentTab === 2 && <Mui.Fade key={2} exit={false}><div style={{ width: "100%" }}><Mui.Music userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+              {currentTab === 3 && <Mui.Fade key={3} exit={false}><div style={{ width: "100%" }}><Mui.Tasks userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+              {currentTab === 4 && <Mui.Fade key={4} exit={false}><div style={{ width: "100%" }}><Mui.UserManagement userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+              {currentTab === 5 && <Mui.Fade key={5} exit={false}><div style={{ width: "100%" }}><Mui.Settings userInfo={userInfo} width="100%" /></div></Mui.Fade>}
+            </Mui.TransitionGroup>
+          </Mui.Paper>
         </Mui.Box>
       </Mui.Box>
     </ThemeProvider>

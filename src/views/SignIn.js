@@ -77,9 +77,11 @@ export default function SignInSide() {
             sx={{
               my: 8,
               mx: 4,
+              height: '100%',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>

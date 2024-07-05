@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as Themes from '../theme'
 import * as Mui from '../Components'
 import BlurBackground from '../components/BlurBackground'
 import * as Api from '../Api.js'
@@ -264,11 +265,7 @@ export default function Player(props) {
   }, [])
 
   return (
-    <ThemeProvider theme={createTheme({
-      palette: {
-        mode: 'dark',
-      }
-    })}>
+    <ThemeProvider theme={Themes.default.dark}>
       <BlurBackground loading="lazy" img={`${currentArtwork}`} filterArg="50px" backgroundColor="rgba(0, 0, 0, 0.40)"></BlurBackground>
       <Mui.Dialog open={editPlaylistDialogStatus} onClose={() => {
         setEditPlaylistDialogStatus(false)
