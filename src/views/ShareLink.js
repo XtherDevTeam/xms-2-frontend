@@ -193,7 +193,7 @@ export default function ShareLink(props) {
           {rawPreviewComponent}
         </Mui.Backdrop>
         <Mui.IconButton sx={{ position: 'absolute', top: 0, right: 0 }} onClick={() => {
-          Mui.setThemeMode(currentTheme.palette.mode === 'dark' ? 'light' : 'dark')
+          Mui.rotateThemeMode()
         }}>
           {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
         </Mui.IconButton>

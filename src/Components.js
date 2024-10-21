@@ -132,6 +132,11 @@ let setThemeMode = (mode) => {
   window.dispatchEvent(event)
 }
 
+let rotateThemeMode = () => {
+  let mode = window.localStorage.getItem('themeMode') === 'light' ? 'dark' : 'light'
+  setThemeMode(mode)
+}
+
 let listenToThemeModeChange = (callback) => {
   window.addEventListener('themeModeChange', (e) => {
     callback(e.newValue)
@@ -159,5 +164,5 @@ export {
   BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider,
   setThemeMode, listenToThemeModeChange, Tasks, Select, FormControl,
   InputLabel, Settings, Switch, FormGroup, UserManagement, Fade, Grow,
-  TransitionGroup, Collapse, SwipeableDrawer
+  TransitionGroup, Collapse, SwipeableDrawer, rotateThemeMode
 }

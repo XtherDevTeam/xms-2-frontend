@@ -665,7 +665,7 @@ let darkTheme = {
     }
   },
   "palette": {
-    "mode": "light",
+    "mode": "dark",
     "themeMode": "dark",
     "primary": {
       "main": "#ffb59c",

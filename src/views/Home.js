@@ -95,7 +95,7 @@ export default function Home() {
               XmediaCenter2
             </Mui.Typography>
             <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
-              Mui.setThemeMode(currentTheme.palette.mode === 'dark' ? 'light' : 'dark')
+              Mui.rotateThemeMode()
             }}>
               {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 sx={{ color: 'white' }} /> : <Mui.Icons.Brightness4 sx={{ color: 'white' }} />}
             </Mui.IconButton>

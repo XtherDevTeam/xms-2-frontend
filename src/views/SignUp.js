@@ -83,7 +83,7 @@ export default function SignUpSide(props) {
         />
         <Mui.Grid item xs={12} sm={6} md={3} component={Mui.Paper} elevation={6} square>
           <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
-            Mui.setThemeMode(currentTheme.palette.mode === 'dark' ? 'light' : 'dark')
+            Mui.rotateThemeMode()
           }}>
             {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
           </Mui.IconButton>
@@ -94,6 +94,10 @@ export default function SignUpSide(props) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              height: 'calc(100vh - 40px)',
+              width: '100%',
+              paddingLeft: '5%',
+              paddingRight: '5%',
             }}
           >
             <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
