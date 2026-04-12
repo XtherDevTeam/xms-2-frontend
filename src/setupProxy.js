@@ -2,12 +2,22 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function (app) {
   app.use(
-    '/api',
+    '/xms/api',
     createProxyMiddleware({
-      target: 'http://192.168.1.3:11453',
+      target: 'https://www.xiaokang00010.top:11452/api/',
       changeOrigin: true,
       pathRewrite: {
-        '^/api': '' //remove /api
+        '^/xms/api': '' //remove /api
+      }
+    })
+  );
+  app.use(
+    '/xms/lyric',
+    createProxyMiddleware({
+      target: 'https://api.vkeys.cn',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/xms/lyric': '' //remove /api
       }
     })
   );

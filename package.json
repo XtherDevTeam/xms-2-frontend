@@ -2,22 +2,34 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/xms",
   "dependencies": {
+    "@cyntler/react-doc-viewer": "^1.17.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.4",
+    "@monaco-editor/react": "^4.7.0",
     "@mui/icons-material": "^5.13.7",
     "@mui/material": "^5.13.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
+    "dayjs": "^1.11.20",
+    "filesize": "^11.0.15",
     "http-proxy-middleware": "^2.0.6",
+    "mime": "^2.6.0",
+    "mime-types": "^3.0.2",
+    "path-browserify": "^1.0.1",
+    "pdfjs-dist": "^4.6.82",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
+    "react-doc-render": "^0.1.54",
+    "react-doc-viewer": "^0.1.16",
     "react-dom": "^18.2.0",
     "react-mui-fileuploader": "^0.5.2",
+    "react-photo-view": "^1.2.7",
     "react-router-dom": "^6.14.1",
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
@@ -45,5 +57,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.99.0"
   }
 }

@@ -154,7 +154,7 @@ export default function Settings(props) {
         <Mui.TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
           <Mui.TableCell sx={{ borderBottom: 'unset' }}>
             <Mui.IconText>
-              <Mui.Avatar sx={{ height: "40px", width: "40px" }} alt={row.name} src={`/api/xms/v1/user/${row.id}/avatar`} />
+              <Mui.Avatar sx={{ height: "40px", width: "40px" }} alt={row.name} src={`${Api.API_BASE_URL}/api/xms/v1/user/${row.id}/avatar`} />
               <Mui.Typography variant='body2' component={"div"}>
                 {row.name}
               </Mui.Typography>

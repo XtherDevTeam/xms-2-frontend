@@ -2,9 +2,9 @@ import SignIn from './views/SignIn'
 import Home from './views/Home'
 import NotMatch from './views/NotMatch'
 import SignUp from './views/SignUp'
-import Player from './views/Player'
 import ShareLink from './views/ShareLink'
+import SpecPage from './views/SpecPage'
 
 export {
-    SignIn, Home, NotMatch, SignUp, Player, ShareLink
+    SignIn, Home, NotMatch, SignUp, ShareLink, SpecPage
 }

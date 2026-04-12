@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Mui from '../Components'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles'
 import loginBackground from '../assets/loginBackground.jpg'
 import { submitLogin } from '../Api'
 import { useNavigate, useHref } from "react-router-dom"
@@ -22,10 +22,7 @@ export default function SignInSide() {
 
   const [alertOpen, setAlertOpen] = React.useState(false)
   const [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
-  let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
-  Mui.listenToThemeModeChange((v) => {
-    setCurrentTheme(Mui.theme())
-  })
+  const theme = useTheme();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -49,7 +46,7 @@ export default function SignInSide() {
   };
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <>
       <Mui.Grid container component="main" sx={{ height: '100vh' }}>
         <Mui.CssBaseline />
         <Mui.Grid
@@ -70,7 +67,7 @@ export default function SignInSide() {
           <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
             Mui.rotateThemeMode()
           }}>
-            {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
+            {theme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
           </Mui.IconButton>
 
           <Mui.Box
@@ -152,6 +149,6 @@ export default function SignInSide() {
           </Mui.Box>
         </Mui.Grid>
       </Mui.Grid>
-    </ThemeProvider>
+    </>
   );
 }

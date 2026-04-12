@@ -62,6 +62,8 @@ import Grow from '@mui/material/Grow'
 import Collapse from '@mui/material/Collapse'
 import { TransitionGroup } from 'react-transition-group'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
+import LinearProgress from '@mui/material/LinearProgress'
+
 
 import * as Icons from '@mui/icons-material'
 import imgBackground1 from './assets/loginBackground.jpg'
@@ -76,6 +78,7 @@ import Music from './components/Music'
 import Tasks from './components/Tasks'
 import Settings from './components/Settings'
 import UserManagement from './components/UserManagement'
+import Slide from '@mui/material/Slide'
 
 import FileUpload from 'react-mui-fileuploader'
 
@@ -164,5 +167,7 @@ export {
   BackgroundColor, Fab, CardActionArea, Icon, IconText, Stack, Slider,
   setThemeMode, listenToThemeModeChange, Tasks, Select, FormControl,
   InputLabel, Settings, Switch, FormGroup, UserManagement, Fade, Grow,
-  TransitionGroup, Collapse, SwipeableDrawer, rotateThemeMode
+  TransitionGroup, Collapse, SwipeableDrawer, rotateThemeMode, Slide,
+  LinearProgress
+
 }

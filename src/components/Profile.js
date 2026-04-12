@@ -434,13 +434,13 @@ export default function Profile(props) {
       </Mui.Snackbar>
       <Mui.CardMedia
         sx={{ height: props.headImgHeight }}
-        image={`/api/xms/v1/user/${props.userInfo.id}/headimg`}
+        image={`${Api.API_BASE_URL}/api/xms/v1/user/${props.userInfo.id}/headimg`}
         title={props.userInfo.name}
       />
       <Mui.CardContent>
         <Mui.Grid container spacing={1}>
           <Mui.Grid item xs="auto">
-            <Mui.Avatar sx={{ height: "50px", width: "50px" }} alt={props.userInfo.name} src={`/api/xms/v1/user/${props.userInfo.id}/avatar`} />
+            <Mui.Avatar sx={{ height: "50px", width: "50px" }} alt={props.userInfo.name} src={`${Api.API_BASE_URL}/api/xms/v1/user/${props.userInfo.id}/avatar`} />
           </Mui.Grid>
           <Mui.Grid item xs="auto">
             <Mui.Typography variant="h6">

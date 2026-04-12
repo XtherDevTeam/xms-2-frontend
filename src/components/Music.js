@@ -3,6 +3,7 @@ import * as Mui from '../Components'
 
 import * as Api from '../Api'
 import PropTypes from 'prop-types'
+import { usePlayer } from '../context/PlayerContext'
 
 
 function a11yProps(index) {
@@ -33,6 +34,7 @@ function CustomTabPanel(props) {
 }
 
 export default function Music(props) {
+  const { loadPlaylist, setIsPlayerOpen } = usePlayer()
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
 
@@ -40,6 +42,8 @@ export default function Music(props) {
 
   let [currentTab, setCurrentTab] = React.useState(0)
   let [playlistsData, setPlaylistsData] = React.useState([])
+  let [statisticsData, setStatisticsData] = React.useState([])
+
 
   let updateUserPlaylist = () => {
     Api.userPlaylists().then((data) => {
@@ -65,7 +69,8 @@ export default function Music(props) {
             <Mui.Grid item xs={6} sm={4} md={3}>
               <Mui.Card>
                 <Mui.CardActionArea onClick={() => {
-                  window.open(`/player?playlistId=${row.id}`)
+                  loadPlaylist(row.id)
+                  setIsPlayerOpen(true)
                 }}>
                   <Mui.CardMedia
                     component="img"
@@ -191,15 +196,73 @@ export default function Music(props) {
     )
   }
 
+  let ShowStatistics = () => {
+    if (statisticsData.length === 0) {
+      return (<Mui.Typography variant='body2' color="text.secondary" sx={{ textAlign: "center" }}>No statistics available...</Mui.Typography>)
+    }
+
+    const limitedStatistics = statisticsData.slice(0, 100);
+    const maxPlays = statisticsData[0]?.plays || 1;
+
+    return (
+      <Mui.Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <Mui.Card sx={{ width: '95%', marginBottom: '10px' }}>
+          <Mui.List>
+            {limitedStatistics.map((item, key) => (
+              <Mui.Box key={key} sx={{ mb: 2 }}>
+                <Mui.ListItem
+                  secondaryAction={
+                    <Mui.Typography variant='subtitle1' sx={{ fontWeight: 'bold' }}>
+                      {item.plays}
+                    </Mui.Typography>
+                  }
+                >
+                  <Mui.ListItemText
+                    primary={item.info.title}
+                    secondary={`${item.info.artist !== '' ? item.info.artist : '<unknown>'} - ${item.info.album !== '' ? item.info.album : '<unknown>'}`}
+                    primaryTypographyProps={{
+                      sx: { textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }
+                    }}
+                    secondaryTypographyProps={{
+                      sx: { textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }
+                    }}
+                  />
+                </Mui.ListItem>
+                <Mui.Box sx={{ px: 2 }}>
+                  <Mui.LinearProgress 
+                    variant="determinate" 
+                    value={(item.plays / maxPlays) * 100} 
+                    sx={{ height: 6, borderRadius: 3 }}
+                  />
+                </Mui.Box>
+              </Mui.Box>
+            ))}
+          </Mui.List>
+        </Mui.Card>
+      </Mui.Box>
+    )
+  }
+
   React.useEffect(() => {
     if (currentTab === 0) {
       updateUserPlaylist(props.userInfo.id)
     } else if (currentTab === 1) {
       setPlaylistsData([])
-    } else {
-
+    } else if (currentTab === 2) {
+      Api.musicStatistics().then((data) => {
+        if (data.data.ok) {
+          setStatisticsData(data.data.data)
+        } else {
+          setAlertDetail({ "type": "error", "title": "Error", "message": `Unable to fetch music statistics: ${data.data.data}` })
+          setAlertOpen(true)
+        }
+      }).catch((err) => {
+        setAlertDetail({ "type": "error", "title": "Error", "message": `Unable to fetch music statistics: NetworkError` })
+        setAlertOpen(true)
+      })
     }
-  }, [currentTab])
+  }, [currentTab, props.userInfo.id])
+
 
   return (
     <div>
@@ -237,7 +300,7 @@ export default function Music(props) {
           <ShowPlaylists list={playlistsData} />
         </CustomTabPanel>
         <CustomTabPanel value={currentTab} index={2}>
-          233
+          <ShowStatistics />
         </CustomTabPanel>
       </Mui.CardContent>
     </div>

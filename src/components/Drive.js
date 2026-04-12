@@ -3,6 +3,8 @@ import * as Mui from '../Components'
 import PathInputDialog from './PathInputDialog'
 import ItemUploadDialog from './ItemUploadDialog'
 import PlaylistSelectDialog from './PlaylistSelectDialog'
+import FilePreviewer from './FilePreviewer'
+
 
 import * as Api from '../Api'
 import axios from 'axios'
@@ -53,6 +55,10 @@ function defaultDownloadMusicDialogState() {
   return { onOk: (param) => { }, onCancel: () => { }, state: false }
 }
 
+function defaultSearchDialogState() {
+  return { onOk: (query) => { }, onCancel: () => { }, state: false }
+}
+
 
 export default function Drive(props) {
   let [filesContextMenuState, setFilesContextMenuState] = React.useState(defaultFilesContextMenuState())
@@ -64,15 +70,40 @@ export default function Drive(props) {
   let [itemUploadDialogState, setItemUploadDialogState] = React.useState(defaultItemUploadDialogState())
   let [playlistSelectDialogState, setPlaylistSelectDialogState] = React.useState(defaultPlaylistSelectDialogState())
   let [downloadMusicDialogState, setDownloadMusicDialogState] = React.useState(defaultDownloadMusicDialogState())
+  let [searchDialogState, setSearchDialogState] = React.useState(defaultSearchDialogState())
+
+  let [filterQuery, setFilterQuery] = React.useState("")
 
   let [rawPreviewComponent, setRawPreviewComponent] = React.useState(<></>)
   let [previewOpen, setPreviewOpen] = React.useState(false)
+  let [previewFileData, setPreviewFileData] = React.useState(null)
+
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
 
   let [driveInfo, setDriveInfo] = React.useState({ "path": "/", "states": [], "info": { "info": { "dirs": 0, "total": 0, "files": 0 }, "list": [] } })
   let [breadcrumb, setBreadcrumb] = React.useState("loading...")
-  let [rawTableRows, setRawTableRows] = React.useState(<div></div>)
+
+  function SearchDialog(props) {
+    let [query, setQuery] = React.useState("")
+    return (
+      <Mui.Dialog onClose={() => { props.onCancel() }} open={props.state}>
+        <Mui.DialogTitle>Filter items</Mui.DialogTitle>
+        <Mui.DialogContent>
+          <Mui.Typography variant='body2' color='text.secondary'>
+            Filter items in the current directory by filename.
+          </Mui.Typography>
+          <Mui.TextField value={query} onChange={(e) => { setQuery(e.currentTarget.value) }} label="Search query" variant="filled" margin="normal" fullWidth />
+        </Mui.DialogContent>
+        <Mui.DialogActions>
+          <Mui.Button onClick={() => { props.onCancel() }}>Cancel</Mui.Button>
+          <Mui.Button onClick={() => { props.onOk(query) }} autoFocus>
+            Search
+          </Mui.Button>
+        </Mui.DialogActions>
+      </Mui.Dialog>
+    )
+  }
 
   function DownloadMusicDialog(props) {
     let [param, setParam] = React.useState("")
@@ -387,6 +418,24 @@ export default function Drive(props) {
           </Mui.ListItemIcon>
           <Mui.ListItemText>Download music</Mui.ListItemText>
         </Mui.MenuItem>
+        <Mui.MenuItem onClick={() => {
+          setSearchDialogState({
+            onOk(query) {
+              setFilterQuery(query)
+              setSearchDialogState(defaultSearchDialogState())
+            },
+            onCancel() {
+              setSearchDialogState(defaultSearchDialogState())
+            },
+            state: true
+          })
+          setDriveContextMenuState(defaultDriveContextMenuState())
+        }}>
+          <Mui.ListItemIcon>
+            <Mui.Icons.Search fontSize='small' />
+          </Mui.ListItemIcon>
+          <Mui.ListItemText>Search</Mui.ListItemText>
+        </Mui.MenuItem>
       </Mui.Menu>
     )
   }
@@ -533,44 +582,40 @@ export default function Drive(props) {
   }
 
   let tableRows = () => {
-    return (driveInfo.info.list.map((row, index) => (
-      <Mui.TableRow
-        hover
-        key={row.index}
-        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-      >
-        <Mui.TableCell component="th" scope="row">
-          {row.type === "file" && <Mui.Icons.InsertDriveFile />}
-          {row.type === "dir" && <Mui.Icons.Folder />}
-        </Mui.TableCell>
-        <Mui.TableCell style={{ width: "40%", overflow: "hidden" }} onClick={() => { handleActionsClick(index, "open") }}>
-          {row.filename}
-        </Mui.TableCell>
-        <Mui.TableCell><p style={{ width: "100px", overflow: "hidden" }}>{row.mime}</p></Mui.TableCell>
-        <Mui.TableCell>{row.lastModified}</Mui.TableCell>
-        <Mui.TableCell>
-          <Mui.IconButton onClick={(event) => {
-            console.log("more: ", event.clientX, event.clientY)
-            setFilesContextMenuState({ state: true, row: row, index: index, posX: event.clientX, posY: event.clientY, targetEl: event.currentTarget })
-            event.preventDefault()
-          }}><Mui.Icons.MoreVert /></Mui.IconButton>
-        </Mui.TableCell>
-      </Mui.TableRow>
-    )))
+    return (driveInfo.info.list
+      .map((row, originalIndex) => ({ ...row, originalIndex }))
+      .filter(row => row.filename.toLowerCase().includes(filterQuery.toLowerCase()))
+      .map((row, index) => (
+        <Mui.TableRow
+          hover
+          key={row.index}
+          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+        >
+          <Mui.TableCell component="th" scope="row">
+            {row.type === "file" && <Mui.Icons.InsertDriveFile />}
+            {row.type === "dir" && <Mui.Icons.Folder />}
+          </Mui.TableCell>
+          <Mui.TableCell style={{ width: "40%", overflow: "hidden" }} onClick={() => { handleActionsClick(row.originalIndex, "open") }}>
+            {row.filename}
+          </Mui.TableCell>
+          <Mui.TableCell><p style={{ width: "100px", overflow: "hidden" }}>{row.mime}</p></Mui.TableCell>
+          <Mui.TableCell>{row.lastModified}</Mui.TableCell>
+          <Mui.TableCell>
+            <Mui.IconButton onClick={(event) => {
+              console.log("more: ", event.clientX, event.clientY)
+              setFilesContextMenuState({ state: true, row: row, index: row.originalIndex, posX: event.clientX, posY: event.clientY, targetEl: event.currentTarget })
+              event.preventDefault()
+            }}><Mui.Icons.MoreVert /></Mui.IconButton>
+          </Mui.TableCell>
+        </Mui.TableRow>
+      )))
   }
 
   let previewFile = (index) => {
-    if (driveInfo.info.list[index].mime.startsWith("application")) {
-      setRawPreviewComponent(<Mui.Typography variant='body2' color="text.primary">Preview not available</Mui.Typography>)
-    } else if (driveInfo.info.list[index].mime.startsWith('video')) {
-      setRawPreviewComponent(<video style={{ maxWidth: "75%" }} controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></video>)
-    } else if (driveInfo.info.list[index].mime.startsWith('audio')) {
-      setRawPreviewComponent(<audio controls><source src={Api.getDownloadPath(driveInfo.info.list[index].path)} type={driveInfo.info.list[index].mime} /></audio>)
-    } else if (driveInfo.info.list[index].mime.startsWith('image')) {
-      setRawPreviewComponent(<img style={{ maxWidth: "75%" }} src={Api.getDownloadPath(driveInfo.info.list[index].path)} alt="preview" />)
-    }
+    setPreviewFileData(driveInfo.info.list[index])
     setPreviewOpen(true)
   }
+
 
   let updateDriveInfo = () => {
     console.log("updating drive info")
@@ -585,7 +630,11 @@ export default function Drive(props) {
             <Mui.Typography variant="h6" gutterBottom color="text.primary">{text}</Mui.Typography>
           </Mui.Link>
         )))
-        setRawTableRows(tableRows())
+        setFilterQuery("")
+        let scrollable = document.querySelector('main [style*="overflow-y: scroll"]') || document.querySelector('main .MuiPaper-root')
+        if (scrollable) {
+          scrollable.scrollTop = 0
+        }
       } else {
         setAlertDetail({ "type": "error", "title": "Error", "message": `Serverside response: ${data.data.data}` })
         setAlertOpen(true)
@@ -610,6 +659,7 @@ export default function Drive(props) {
         <ItemRenameDialog origin={itemRenameDialogState.origin} path={itemRenameDialogState.path} state={itemRenameDialogState.state} onOk={itemRenameDialogState.onOk} onCancel={itemRenameDialogState.onCancel}></ItemRenameDialog>
         <ConfirmDialog title={confirmDialogState.title} message={confirmDialogState.message} state={confirmDialogState.state} onOk={confirmDialogState.onOk} onCancel={confirmDialogState.onCancel}></ConfirmDialog>
         <DownloadMusicDialog state={downloadMusicDialogState.state} onOk={downloadMusicDialogState.onOk} onCancel={downloadMusicDialogState.onCancel}></DownloadMusicDialog>
+        <SearchDialog state={searchDialogState.state} onOk={searchDialogState.onOk} onCancel={searchDialogState.onCancel}></SearchDialog>
         <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
           <Mui.Alert severity={alertDetail.type} action={
             <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >
@@ -620,13 +670,16 @@ export default function Drive(props) {
             {alertDetail.message}
           </Mui.Alert>
         </Mui.Snackbar>
-        <Mui.Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={previewOpen}
-          onClick={() => { setRawPreviewComponent(<></>); setPreviewOpen(false) }}
-        >
-          {rawPreviewComponent}
-        </Mui.Backdrop>
+        <FilePreviewer 
+          file_path={previewFileData?.path} 
+          file_attrs={previewFileData} 
+          open={previewOpen} 
+          setOpen={setPreviewOpen} 
+          setAlertOpen={setAlertOpen}
+          setAlertDetail={setAlertDetail}
+        />
+
+
         <Mui.Breadcrumbs aria-label="breadcrumb">
           {breadcrumb}
         </Mui.Breadcrumbs>
@@ -665,7 +718,7 @@ export default function Drive(props) {
                   <Mui.TableCell></Mui.TableCell>
                 </Mui.TableRow>
               }
-              {rawTableRows}
+              {tableRows()}
             </Mui.TableBody>
           </Mui.Table>
         </Mui.TableContainer>

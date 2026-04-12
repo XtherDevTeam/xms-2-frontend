@@ -1,5 +1,9 @@
 import axios from "axios"
 
+axios.defaults.baseURL = '/xms'
+
+export const API_BASE_URL = '/xms'
+
 function makeResult(ok, data) {
   return { "ok": ok, "data": data }
 }
@@ -73,6 +77,15 @@ function driveUpload(path, data) {
   return axios.post(`/api/xms/v1/drive/upload?path=${encodeURIComponent(path)}`, data)
 }
 
+function driveFetchFile(path) {
+  return axios.get(`/api/xms/v1/drive/file?path=${encodeURIComponent(path)}`)
+}
+
+function driveUpdateFile(path, content) {
+  return axios.post(`/api/xms/v1/drive/update`, { path: path, content: content })
+}
+
+
 function userAvatarUpdate(data) {
   return axios.post(`/api/xms/v1/user/avatar/update`, data)
 }
@@ -82,15 +95,15 @@ function userHeadImgUpdate(data) {
 }
 
 function getDownloadPath(path) {
-  return `/api/xms/v1/drive/file?path=` + encodeURIComponent(path)
+  return `${API_BASE_URL}/api/xms/v1/drive/file?path=` + encodeURIComponent(path)
 }
 
 function getPlaylistArtworkPath(pid) {
-  return `/api/xms/v1/music/playlist/${pid}/artwork`
+  return `${API_BASE_URL}/api/xms/v1/music/playlist/${pid}/artwork`
 }
 
 function getSongArtworkPath(sid) {
-  return `/api/xms/v1/music/song/${sid}/artwork`
+  return `${API_BASE_URL}/api/xms/v1/music/song/${sid}/artwork`
 }
 
 function musicPlaylistCreate(name, description) {
@@ -208,7 +221,7 @@ function musicPlaylistSongsSwap(playlistId, src, dest) {
 }
 
 function getMusicPlaylistSongsFileSrc(playlistId, songId) {
-  return `/api/xms/v1/music/playlist/${playlistId}/songs/${songId}/file`
+  return `${API_BASE_URL}/api/xms/v1/music/playlist/${playlistId}/songs/${songId}/file`
 }
 
 function musicPlaylistEdit(playlistId, name, description) {
@@ -283,6 +296,10 @@ function increaseSongPlayCount (songId) {
   return axios.post(`/api/xms/v1/music/song/${songId}/increasePlayCount`)
 }
 
+function musicStatistics() {
+  return axios.get(`/api/xms/v1/music/statistics`)
+}
+
 export {
   submitLogin, submitSignup, checkIfLoggedIn, userInfo, driveDir, driveDelete,
   signOut, getDownloadPath, driveRename, driveMove, driveCreateDir, driveUpload,
@@ -295,5 +312,5 @@ export {
   getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir, userTasks, infoPlugins,
   taskCreate, taskInfo, taskDelete, config, configUpdate, info, userManageDelete,
   userManageUpdateLevel, userManageList, userManageCreate, increasePlaylistPlayCount,
-  increaseSongPlayCount
+  increaseSongPlayCount, musicStatistics, driveFetchFile, driveUpdateFile
 }

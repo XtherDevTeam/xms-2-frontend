@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@emotion/react'
+import { useTheme } from '@mui/material/styles'
 import * as React from 'react'
 import { useParams } from 'react-router-dom'
 import * as Mui from '../Components'
@@ -13,7 +13,6 @@ export default function ShareLink(props) {
   let [quickCheckOutList, setQuickCheckOutList] = React.useState([])
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
-  let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
   let [shareLinkInfo, setShareLinkInfo] = React.useState({
     owner: {
       name: '理塘丁真',
@@ -27,9 +26,7 @@ export default function ShareLink(props) {
       mime: 'audio/mpeg'
     }
   })
-  Mui.listenToThemeModeChange((v) => {
-    setCurrentTheme(Mui.theme())
-  })
+  const theme = useTheme();
 
   let refreshShareLinkInfo = (sid) => {
     Api.shareLinkInfo(sid).then((data) => {
@@ -173,7 +170,7 @@ export default function ShareLink(props) {
 
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <>
       <Mui.Container>
         <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
           <Mui.Alert severity={alertDetail.type} action={
@@ -195,7 +192,7 @@ export default function ShareLink(props) {
         <Mui.IconButton sx={{ position: 'absolute', top: 0, right: 0 }} onClick={() => {
           Mui.rotateThemeMode()
         }}>
-          {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
+          {theme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 /> : <Mui.Icons.Brightness4 />}
         </Mui.IconButton>
         <Mui.Grid container direction="row"
           justifyContent="center"
@@ -230,6 +227,6 @@ export default function ShareLink(props) {
           </Mui.Grid>
         </Mui.Grid>
       </Mui.Container >
-    </ThemeProvider >
+    </>
   )
 }

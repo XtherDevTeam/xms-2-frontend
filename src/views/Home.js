@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Mui from '../Components'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles'
 import loginBackground from '../assets/loginBackground.jpg'
 
 import * as Api from '../Api'
@@ -17,11 +17,8 @@ export default function Home() {
   let [alertOpen, setAlertOpen] = React.useState(false)
   let [alertDetail, setAlertDetail] = React.useState({ "type": "error", "title": "", "message": "" })
 
-  let [currentTheme, setCurrentTheme] = React.useState(Mui.theme())
-  Mui.listenToThemeModeChange((v) => {
-    setCurrentTheme(Mui.theme())
-  })
-
+  const theme = useTheme();
+  
   let handleSignOutBtnClick = () => {
     Api.signOut().then((data) => {
       if (data.data.ok) {
@@ -67,7 +64,7 @@ export default function Home() {
 
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <>
       <Mui.Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => { setAlertOpen(false) }}>
         <Mui.Alert severity={alertDetail.type} action={
           <Mui.IconButton aria-label="close" color="inherit" size="small" onClick={() => { setAlertOpen(false) }} >
@@ -97,7 +94,7 @@ export default function Home() {
             <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
               Mui.rotateThemeMode()
             }}>
-              {currentTheme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 sx={{ color: 'white' }} /> : <Mui.Icons.Brightness4 sx={{ color: 'white' }} />}
+              {theme.palette.mode === 'dark' ? <Mui.Icons.Brightness7 sx={{ color: 'white' }} /> : <Mui.Icons.Brightness4 sx={{ color: 'white' }} />}
             </Mui.IconButton>
             <Mui.IconButton sx={{ float: 'right' }} onClick={() => {
               handleSignOutBtnClick()
@@ -181,7 +178,7 @@ export default function Home() {
         </Mui.Drawer>
         <Mui.Box component="main" sx={{
           flexGrow: 1, p: 3,
-          backgroundColor: currentTheme.palette.surfaceContainer.main
+          backgroundColor: theme.palette.surfaceContainer.main
         }}>
           <Mui.Toolbar />
           <Mui.Paper style={{ padding: 0, borderTopLeftRadius: 30, height: `calc(100vh - 64px)`, overflowY: 'scroll' }}>
@@ -196,6 +193,6 @@ export default function Home() {
           </Mui.Paper>
         </Mui.Box>
       </Mui.Box>
-    </ThemeProvider>
+    </>
   )
 }
