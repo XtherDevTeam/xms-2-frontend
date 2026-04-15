@@ -22,6 +22,7 @@ export const PlayerProvider = ({ children }) => {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [isPlaylistDrawerOpen, setIsPlaylistDrawerOpen] = useState(false);
   const [lyrics, setLyrics] = useState([]);
+  const [sub_lyrics, setSubLyrics] = useState([]);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
 
 
@@ -39,13 +40,21 @@ export const PlayerProvider = ({ children }) => {
   useEffect(() => {
     if (currentTrackInfo) {
       setLyrics([]);
+      setSubLyrics([]);
       setCurrentLyricIndex(-1);
       const { title, album, artist } = currentTrackInfo.info;
       searchSongLyrics(title, album, artist).then(data => {
         const lyricStr = data?.lrc;
+        const subLyricStr = data?.trans;
+        
         if (lyricStr) {
           const parsed = parseLRC(lyricStr);
           setLyrics(parsed);
+        }
+        
+        if (subLyricStr) {
+          const parsedSub = parseLRC(subLyricStr);
+          setSubLyrics(parsedSub);
         }
       }).catch(err => console.error("Error fetching lyrics", err));
     }
@@ -63,7 +72,7 @@ export const PlayerProvider = ({ children }) => {
         setCurrentLyricIndex(index);
       }
     }
-  }, [progress, lyrics, currentLyricIndex]);
+  }, [progress, lyrics, sub_lyrics, currentLyricIndex]);
 
 
   const updateCurrentPlayStatus = () => {
@@ -206,7 +215,7 @@ export const PlayerProvider = ({ children }) => {
     <PlayerContext.Provider value={{
       playlistId, playlistInfo, playlistSongList, currentTrackIndex, currentTrackInfo,
       isPlaying, progress, duration, volume, playMode, isPlayerOpen, isPlaylistDrawerOpen,
-      lyrics, currentLyricIndex,
+      lyrics, sub_lyrics, currentLyricIndex,
       setIsPlayerOpen, setIsPlaylistDrawerOpen, setVolume, setPlayMode,
       play, pause, togglePlay, next, prev, seek, loadPlaylist, removeSongFromPlaylist
     }}>

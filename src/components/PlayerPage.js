@@ -29,6 +29,7 @@ export default function PlayerPage() {
     setVolume,
     setPlayMode,
     lyrics,
+    sub_lyrics
   } = usePlayer();
 
   if (!currentTrackInfo) return null;
@@ -192,6 +193,7 @@ export default function PlayerPage() {
                 ) : (
                   <LyricView 
                     lyrics={lyrics} 
+                    sub_lyrics={sub_lyrics}
                     currentTime={progress} 
                     onLyricPress={(line) => seek(line.time)} 
                   />

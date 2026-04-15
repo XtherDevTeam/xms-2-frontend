@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles';
  * @param {number} currentTime - Current playback position in seconds
  * @param {function} onLyricPress - Callback when a lyric line is pressed
  */
-const LyricView = ({ lyrics = [], currentTime = 0, onLyricPress }) => {
+const LyricView = ({ lyrics = [], sub_lyrics = null, currentTime = 0, onLyricPress }) => {
   const defaultLyricOffset = -1.0; // -1.0s
   const theme = useTheme();
   const scrollViewRef = useRef(null);
@@ -87,11 +87,12 @@ const LyricView = ({ lyrics = [], currentTime = 0, onLyricPress }) => {
         {lyrics.map((line, index) => (
           <Mui.Typography
             key={`${line.time}-${index}`}
+            component="div"
             onClick={() => onLyricPress && onLyricPress(line)}
             ref={(el) => handleRef(index, el)}
             sx={{
               fontSize: index === currentLineIndex ? 26 : 26,
-              lineHeight: 1.8,
+              lineHeight: 1.5,
               textAlign: 'left',
               marginTop: index === currentLineIndex ? 20 : 10,
               marginBottom: index === currentLineIndex ? 20 : 10,
@@ -109,7 +110,20 @@ const LyricView = ({ lyrics = [], currentTime = 0, onLyricPress }) => {
               }
             }}
           >
-            {line.text || '•••'}
+            <Mui.Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Mui.Box>{line.text || '•••'}</Mui.Box>
+              {sub_lyrics && sub_lyrics[index] && sub_lyrics[index].text && (
+                <Mui.Box sx={{ 
+                  fontSize: '0.65em', 
+                  opacity: 0.8, 
+                  marginTop: '4px',
+                  fontWeight: 'normal',
+                  lineHeight: 1.2
+                }}>
+                  {sub_lyrics[index].text}
+                </Mui.Box>
+              )}
+            </Mui.Box>
           </Mui.Typography>
         ))}
       </Mui.Box>
