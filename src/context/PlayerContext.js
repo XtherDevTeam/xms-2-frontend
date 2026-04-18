@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import * as Api from '../Api';
-import { searchSongLyrics, parseLRC } from '../lyrics';
+import { get_lyric_for, parseLRC } from '../lyrics';
 
 
 
@@ -43,7 +43,7 @@ export const PlayerProvider = ({ children }) => {
       setSubLyrics([]);
       setCurrentLyricIndex(-1);
       const { title, album, artist } = currentTrackInfo.info;
-      searchSongLyrics(title, album, artist).then(data => {
+      get_lyric_for(title, album, artist).then(data => {
         const lyricStr = data?.lrc;
         const subLyricStr = data?.trans;
         
