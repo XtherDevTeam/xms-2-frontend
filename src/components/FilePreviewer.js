@@ -7,7 +7,9 @@ import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import mime from 'mime';
 import ContentEditor from './ContentEditor';
-import { DocRender } from 'react-doc-render';
+import { Document, Page } from 'react-pdf'
+import 'react-pdf/dist/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 function TextFilePreviewer({ file_path, file_attrs, open, setOpen, setAlertOpen, setAlertDetail }) {
   const [content, setContent] = React.useState('');
@@ -115,15 +117,49 @@ function MediaFilePreviewer({ file_attrs, file_url, open, setOpen }) {
   )
 }
 
-function DocumentFilePreviewer({ file_attrs, file_url, open, setOpen }) {
+function PdfRenderer({ file_url, open, setOpen }) {
+  const [numPages, setNumPages] = React.useState(null);
+  const [pageNumber, setPageNumber] = React.useState(1);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
+  return (
+    <Document
+      file={file_url}
+      onLoadSuccess={onDocumentLoadSuccess}
+      style={{ width: '100%', height: '100%' }}
+    >
+      {/* 2 page when middle and up, 1 page when down */}
+      <Mui.Grid container >
+         {Array.from(new Array(numPages), (el, index) => (
+          <Mui.Grid key={`page_${index + 1}`} item xs={12} md={6}>
+            <Page pageNumber={index + 1} renderTextLayer renderAnnotationLayer />
+          </Mui.Grid>
+        ))}
+      </Mui.Grid>
+      
+    </Document>    
+  )
+}
+
+function DocumentFilePreviewer({ file_path, file_attrs, file_url, open, setOpen }) {
+  const [pdfUrl, setPdfUrl] = React.useState(null);
+
+  React.useEffect(() => {
+    if (file_attrs?.mime === "application/pdf") {
+      setPdfUrl(file_url);
+    } else {
+      setPdfUrl(Api.getConvertPdfPath(file_path));
+    }
+  }, [file_attrs, file_url, file_path]);
+
   return (
     <Mui.Dialog open={open} onClose={() => setOpen(false)} maxWidth="lg" fullWidth>
       <Mui.DialogTitle>Preview {file_attrs?.filename}</Mui.DialogTitle>
       <Mui.DialogContent sx={{ height: '85vh', padding: 0 }}>
-        <DocRender
-          uri={file_url}
-          style={{ width: '100%', height: '100%' }}
-        />
+        {pdfUrl && <PdfRenderer file_url={pdfUrl} />}
       </Mui.DialogContent> 
       <Mui.DialogActions>
         <Mui.Button onClick={() => setOpen(false)}>Close</Mui.Button>
@@ -181,7 +217,7 @@ export default function FilePreviewer({ file_path, file_attrs, open, setOpen, se
       {fileRendererType === 'image' && <ImageFilePreviewer file_url={fileUrl} open={open} setOpen={setOpen} />}
       {fileRendererType === 'media' && <MediaFilePreviewer file_attrs={file_attrs} file_url={fileUrl} open={open} setOpen={setOpen} />}
       {fileRendererType === 'text' && <TextFilePreviewer file_path={file_path} file_attrs={file_attrs} open={open} setOpen={setOpen} setAlertOpen={setAlertOpen} setAlertDetail={setAlertDetail} />}
-      {fileRendererType === 'document' && <DocumentFilePreviewer file_attrs={file_attrs} file_url={fileUrl} open={open} setOpen={setOpen} />}
+      {fileRendererType === 'document' && <DocumentFilePreviewer file_path={file_path} file_attrs={file_attrs} file_url={fileUrl} open={open} setOpen={setOpen} />}
       {fileRendererType === 'unknown' && (
         <Mui.Snackbar open={open} onClose={() => setOpen(false)} autoHideDuration={6000}>
             <Mui.Alert severity="error" onClose={() => setOpen(false)}>

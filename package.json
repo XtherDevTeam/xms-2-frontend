@@ -4,7 +4,6 @@
   "private": true,
   "homepage": "/xms",
   "dependencies": {
-    "@cyntler/react-doc-viewer": "^1.17.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.4",
@@ -20,15 +19,14 @@
     "http-proxy-middleware": "^2.0.6",
     "mime": "^2.6.0",
     "mime-types": "^3.0.2",
+    "monaco-editor": "^0.55.1",
     "path-browserify": "^1.0.1",
-    "pdfjs-dist": "^4.6.82",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
-    "react-doc-render": "^0.1.54",
-    "react-doc-viewer": "^0.1.16",
     "react-dom": "^18.2.0",
     "react-mui-fileuploader": "^0.5.2",
+    "react-pdf": "^10.4.1",
     "react-photo-view": "^1.2.7",
     "react-router-dom": "^6.14.1",
     "react-scripts": "^5.0.1",
@@ -38,7 +36,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "copy-monaco": "node scripts/copy-monaco.js",
+    "postinstall": "npm run copy-monaco && node scripts/copy-pdfjs.js"
   },
   "eslintConfig": {
     "extends": [

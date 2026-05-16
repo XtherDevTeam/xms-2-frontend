@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { GlobalWorkerOptions } from 'pdfjs-dist';
+import { pdfjs } from 'react-pdf';
+import { loader } from '@monaco-editor/react';
 import * as Views from "./Views"
 import reportWebVitals from './reportWebVitals';
 import MainLayout from './components/MainLayout';
@@ -10,20 +11,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-// Hack to prevent dependencies (like react-doc-render) from overwriting the worker path.
-// We use defineProperty to make it 'read-only' after setting it correctly.
-const workerPath = (process.env.PUBLIC_URL || '') + '/pdf.worker.min.js';
+const workerPath = (process.env.PUBLIC_URL || '') + '/pdf.worker.min.mjs';
+pdfjs.GlobalWorkerOptions.workerSrc = workerPath;
 
-try {
-  Object.defineProperty(GlobalWorkerOptions, 'workerSrc', {
-    get: () => workerPath,
-    set: () => {}, // Disable setting
-    configurable: false
-  });
-} catch (e) {
-  // Fallback if property is already defined as non-configurable
-  GlobalWorkerOptions.workerSrc = workerPath;
-}
+// Configure Monaco Editor to load from local source
+loader.config({ paths: { vs: (process.env.PUBLIC_URL || '') + '/vs' } });
 
 const router = createBrowserRouter([
   {

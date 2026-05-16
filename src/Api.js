@@ -98,6 +98,10 @@ function getDownloadPath(path) {
   return `${API_BASE_URL}/api/xms/v1/drive/file?path=` + encodeURIComponent(path)
 }
 
+function getConvertPdfPath(path) {
+  return `${API_BASE_URL}/api/xms/v1/convert/pdf?path=` + encodeURIComponent(path)
+}
+
 function getPlaylistArtworkPath(pid) {
   return `${API_BASE_URL}/api/xms/v1/music/playlist/${pid}/artwork`
 }
@@ -312,5 +316,5 @@ export {
   getShareLinkFilePath, getShareLinkDirFilePath, shareLinkDir, userTasks, infoPlugins,
   taskCreate, taskInfo, taskDelete, config, configUpdate, info, userManageDelete,
   userManageUpdateLevel, userManageList, userManageCreate, increasePlaylistPlayCount,
-  increaseSongPlayCount, musicStatistics, driveFetchFile, driveUpdateFile
+  increaseSongPlayCount, musicStatistics, driveFetchFile, driveUpdateFile, getConvertPdfPath
 }
