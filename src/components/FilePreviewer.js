@@ -119,10 +119,17 @@ function MediaFilePreviewer({ file_attrs, file_url, open, setOpen }) {
 
 function PdfRenderer({ file_url, open, setOpen }) {
   const [numPages, setNumPages] = React.useState(null);
-  const [pageNumber, setPageNumber] = React.useState(1);
+  const [isLandscape, setIsLandscape] = React.useState(false);
 
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
+  async function onDocumentLoadSuccess(pdf) {
+    setNumPages(pdf.numPages);
+    try {
+      const firstPage = await pdf.getPage(1);
+      const viewport = firstPage.getViewport({ scale: 1 });
+      setIsLandscape(viewport.width > viewport.height);
+    } catch (e) {
+      console.error('Failed to get page dimensions', e);
+    }
   }
 
   return (
@@ -131,10 +138,9 @@ function PdfRenderer({ file_url, open, setOpen }) {
       onLoadSuccess={onDocumentLoadSuccess}
       style={{ width: '100%', height: '100%' }}
     >
-      {/* 2 page when middle and up, 1 page when down */}
-      <Mui.Grid container >
+      <Mui.Grid container justifyContent="center">
          {Array.from(new Array(numPages), (el, index) => (
-          <Mui.Grid key={`page_${index + 1}`} item xs={12} md={6}>
+          <Mui.Grid key={`page_${index + 1}`} item xs={12} md={isLandscape ? 12 : 6} sx={{ display: 'flex', justifyContent: 'center' }}>
             <Page pageNumber={index + 1} renderTextLayer renderAnnotationLayer />
           </Mui.Grid>
         ))}
