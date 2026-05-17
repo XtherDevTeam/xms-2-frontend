@@ -136,6 +136,7 @@ function PdfRenderer({ file_url, open, setOpen }) {
     <Document
       file={file_url}
       onLoadSuccess={onDocumentLoadSuccess}
+      onLoadError={(error) => alert('PDF Load Error: ' + error.message + '\n\nStack:\n' + error.stack)}
       style={{ width: '100%', height: '100%' }}
     >
       <Mui.Grid container justifyContent="center">

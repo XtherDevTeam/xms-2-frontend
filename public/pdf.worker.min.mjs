@@ -1,3 +1,4 @@
+if(typeof Promise.withResolvers!=='function'){Promise.withResolvers=function(){let r,j;const p=new Promise((a,b)=>{r=a;j=b});return{promise:p,resolve:r,reject:j}}};if(typeof URL.parse!=='function'){URL.parse=function(u,b){try{return new URL(u,b)}catch(e){return null}}};
 /**
  * @licstart The following is the entire license notice for the
  * JavaScript code in this page

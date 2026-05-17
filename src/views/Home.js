@@ -181,7 +181,7 @@ export default function Home() {
           backgroundColor: theme.palette.surfaceContainer.main
         }}>
           <Mui.Toolbar />
-          <Mui.Paper style={{ padding: 0, borderTopLeftRadius: 30, height: `calc(100vh - 64px)`, overflowY: 'scroll' }}>
+          <Mui.Paper style={{ padding: 0, borderTopLeftRadius: 30, height: `calc(100vh - 64px)`, overflowY: 'scroll'}} elevation={1}>
             <Mui.TransitionGroup>
               {currentTab === 0 && <Mui.Fade key={0} exit={false}><div style={{ width: "100%" }}><Mui.Profile userInfo={userInfo} width="100%" headImgHeight="240px" /></div></Mui.Fade>}
               {currentTab === 1 && <Mui.Fade key={1} exit={false}><div style={{ width: "100%" }}><Mui.Drive userInfo={userInfo} width="100%" /></div></Mui.Fade>}
